@@ -1,6 +1,6 @@
 # Project Proposal
 
-##### Proposal
+#### Proposal
 
 For this project, I'll implement a windowed application that allows the user to
 create and traverse a collection of song files that they have stored locally.
@@ -11,7 +11,7 @@ user will be able to select a file and then have it play out through standard
 audio output, and a progress bar with a current time and total time will
 appear on either side.
 
-##### Additional assets
+#### Additional assets
 
 As for additional assets, I'll use the openFrameworks addon 'ofxGui,' which allows
 for an easier implementation of some of the graphics details (ex. the slider
