@@ -1,11 +1,9 @@
 #include "ofMain.h"
 #include "ofApp.h"
 
-//========================================================================
-
-/* 
-	Modified from the setup method, but uses a ofGLFWWindowSettings,
-	instead of the other one because it has a resizeable field...
+/*
+	Modified from the ofGLSetup() method, but uses a ofGLFWWindowSettings
+	to have access to a resizable field that can be set to false.
 */
 void modifiedSetup(int width, int height, ofWindowMode winMode) {
 	ofGLFWWindowSettings settings;
@@ -18,7 +16,7 @@ void modifiedSetup(int width, int height, ofWindowMode winMode) {
 	ofCreateWindow(settings);
 }
 
-int main(){
-	modifiedSetup(1000, 600, OF_WINDOW);
+int main() {
+	modifiedSetup(800, 600, OF_WINDOW);
 	ofRunApp(new ofApp());
 }

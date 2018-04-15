@@ -1,9 +1,10 @@
-Music Player/.vs
-Music Player/bin
-Music Player/obj
-Music Player.sln
-Music Player.vcxproj
-Music Player.vcxproj.filters
-Music Player.vcxproj.user
-icon.rc
-addons.make
+MusicPlayerWithDat/bin
+MusicPlayerWithDat/obj
+MusicPlayerWithDat/addons.make
+MusicPlayerWithDat/icon.rc
+MusicPlayerWithDat/MusicPlayerWithDat.sln
+MusicPlayerWithDat/MusicPlayerWithDat.vcxproj
+MusicPlayerWithDat/MusicPlayerWithDat.vcxproj.filters
+MusicPlayerWithDat/MusicPlayerWithDat.vcxproj.user
+MusicPlayerWithDat/.vs/
+
