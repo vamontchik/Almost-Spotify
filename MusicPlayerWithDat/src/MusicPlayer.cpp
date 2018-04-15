@@ -15,12 +15,12 @@ void MusicPlayer::initFolderProcess() {
 }
 
 MusicPlayer::MusicPlayer() 
-	: songFolder_(nullptr), songPlayer_(nullptr), songQueue_(nullptr), inPlay_(false) 
+	: songFolder_(nullptr), songPlayer_(nullptr), songQueue_(nullptr),
+	  inPlay_(false), updatedQueue_(false)
 {
 	initFolderProcess();
 	songPlayer_ = new ofSoundPlayer();
 	songQueue_ = new std::queue<ofFile>();
-	inPlay_ = false;
 }
 
 MusicPlayer::~MusicPlayer() 
@@ -64,6 +64,9 @@ void MusicPlayer::addSong(ofFile fileToAdd) {
 		std::cout << ADDITION_TO_Q << fileToAdd.getFileName() << std::endl;
 		std::cout << LOADED_TO_PLAYER << fileToAdd.getFileName() << std::endl;
 	}
+	
+	//flag for gui reset
+	updatedQueue_ = true;
 }
 
 /*
@@ -73,6 +76,9 @@ void MusicPlayer::unloadSong() {
 	std::cout << SONG_UNLOADED << songQueue_->front().getFileName() << std::endl;
 	songPlayer_->unload();
 	songQueue_->pop();
+
+	//flag for gui reset
+	updatedQueue_ = true;
 }
 
 /*
@@ -96,7 +102,7 @@ void MusicPlayer::play() {
 }
 
 void MusicPlayer::changePauseState() {
-	static bool notPaused = true; // bad solution to the fac that there's no isPaused() ...
+	static bool notPaused = true; // bad solution to the fact that there's no isPaused() ...
 	if (notPaused) {
 		std::cout << PAUSING_SONG << songQueue_->front().getFileName() << std::endl;
 		songPlayer_->setPaused(true);
@@ -110,7 +116,12 @@ void MusicPlayer::changePauseState() {
 }
 
 void MusicPlayer::skipToNext() {
-	songPlayer_->stop(); //the next update call will start the next song
+	if (songPlayer_->getIsPlaying()) {
+		songPlayer_->stop(); //the next update call will start the next song
+
+		//trigger gui flag to reset
+		updatedQueue_ = true;
+	}
 }
 
 /*
@@ -145,21 +156,25 @@ void MusicPlayer::updateCurrentSong() {
 				//repeated calls to unload() and pop()
 				inPlay_ = false;
 			}
+
+			//flag for gui reset
+			updatedQueue_ = true;
 		}
 	}
 }
 
-/*
-	A vector of the song files in the queue, in the correct order.
-	Also, this is horribly inefficient but queues don't have
-	an iterator or a view over them, so... :(
-*/
-std::vector<ofFile> MusicPlayer::getSongsInQueue() {
-	std::vector<ofFile> songsToCopyOut;
-	std::queue<ofFile> copy(*songQueue_);
-	while (copy.size() > 0) {
-		songsToCopyOut.push_back(songQueue_->front());
-		songQueue_->pop();
+//Use scroll view b/c it has a clear() method... :3
+void MusicPlayer::updateSongList(ofxDatGuiScrollView* scrollViewPtr) {
+	if (updatedQueue_) {
+		std::deque<ofFile> allowTraversal = songQueue_->_Get_container();
+
+		//add in a scroll view for each song
+		scrollViewPtr->clear();
+		for (ofFile songFile : allowTraversal) {
+			scrollViewPtr->add(songFile.getBaseName());
+		}
+
+		//reset GUI flag because it's been updated
+		updatedQueue_ = false;
 	}
-	return songsToCopyOut;
 }

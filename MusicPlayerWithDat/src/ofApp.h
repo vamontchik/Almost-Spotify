@@ -13,12 +13,13 @@ private:
 	void draw();
 		
 private:
-	ofxDatGui* panel;
-	ofxDatGuiTheme* theme;
-	MusicPlayer* player;
+	ofxDatGuiScrollView* scrollView_;
+	ofxDatGui* panel_;
+	ofxDatGuiTheme* theme_;
+	MusicPlayer* player_;
 
 private:
-	void onButtonEvent(ofxDatGuiButtonEvent);
+	void onScrollViewEvent(ofxDatGuiScrollViewEvent e);
 	void keyPressed(int key);
 	void mousePressed(int x, int y, int button);
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxDatGui.h"
 
 class MusicPlayer {
 
@@ -9,6 +10,7 @@ private:
 	ofSoundPlayer* songPlayer_;
 	std::queue<ofFile>* songQueue_;
 	bool inPlay_;
+	bool updatedQueue_;
 
 	const std::string SONG_FOLDER_NAME = "songs";
 	const std::string SONG_FOLDER_PATH_PROMPT = "Path to Song Folder: ";
@@ -43,5 +45,5 @@ public:
 	void changePauseState();
 	void skipToNext();
 	void updateCurrentSong();
-	std::vector<ofFile> getSongsInQueue();
+	void updateSongList(ofxDatGuiScrollView*);
 };
