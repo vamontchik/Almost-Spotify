@@ -14,29 +14,16 @@ void ofApp::setup() {
 	//Background Color
 	ofSetBackgroundColor(ofColor::black);
 
-	//GUI Setup ---> centered on screen
+	//Centered on screen
 	ofSetWindowPosition(ofGetScreenWidth() / 2 - ofGetWidth() / 2, ofGetScreenHeight() / 2 - ofGetWidth() / 2);
 	
+	//GUI Setup
 	scrollView_ = new ofxDatGuiScrollView("PLAYLIST", 10);
 	theme_ = new ofxDatGuiThemeWireframe();
 	scrollView_->setTheme(theme_);
 	scrollView_->setBackgroundColor(ofColor::black);
 	scrollView_->setWidth(ofGetWidth());
 	scrollView_->onScrollViewEvent(this, &ofApp::onScrollViewEvent);
-
-	/*
-	panel_ = new ofxDatGui(ofxDatGuiAnchor::TOP_LEFT);
-	theme_ = new ofxDatGuiThemeSmoke();
-	panel_->setTheme(theme_);
-
-	panel_->addHeader("PLAYLIST");
-	panel_->getHeader()->setDraggable(false);
-	panel_->addFooter();
-	panel_->getFooter()->setLabelWhenCollapsed("Expand!");
-	panel_->getFooter()->setLabelWhenExpanded("Collapse!");
-	panel_->setWidth(ofGetWidth());
-	panel_->onButtonEvent(this, &ofApp::onButtonEvent);
-	*/
 
 	//frame limit to lessen work done by GPU
 	ofSetFrameRate(20);
