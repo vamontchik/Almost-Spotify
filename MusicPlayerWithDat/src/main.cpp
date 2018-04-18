@@ -17,6 +17,6 @@ void modifiedSetup(int width, int height, ofWindowMode winMode) {
 }
 
 int main() {
-	modifiedSetup(400, 600, OF_WINDOW);
+	modifiedSetup(800, 800, OF_WINDOW);
 	ofRunApp(new ofApp());
 }

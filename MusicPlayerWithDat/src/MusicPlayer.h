@@ -31,7 +31,6 @@ private:
 	void addSong(ofFile);
 	void loadSongIntoPlayer(ofFile);
 	void playSongAtFront();
-	void putSongInFront(ofFile);
 	void play();
 
 public:

@@ -80,6 +80,7 @@ void MusicPlayer::unloadSong(bool pushSongBack) {
 }
 
 void MusicPlayer::loadSongIntoPlayer(ofFile songFile) {
+	// Use "true" so it streams files instead of loading the into memory...
 	songPlayer_->load(songFile.getAbsolutePath(), true);
 	std::cout << LOADED_TO_PLAYER << songFile.getFileName() << std::endl;
 }
@@ -123,13 +124,14 @@ void MusicPlayer::playSongAtFront() {
 }
 
 /*
-	Called by update() to check whether or not it's time to 
-	transition to the next song in the queue. If it hits the end,
-	a log message is printed and inPlay_ is set to false.
+	Called by update() to transition to the next song in the queue, if possible.
 */
 void MusicPlayer::updateCurrentSong() {
 	if (inPlay_) {
-		if (!songPlayer_->getIsPlaying()) {
+		//check if either:
+		//	(1) a song has been stopped with the stop() method
+		//	(2) a song has reached its end using (getPosition() == 1.0)
+		if (!songPlayer_->getIsPlaying() || songPlayer_->getPosition() == 1.0) {
 			//it's ok to use front() because the front has been pushed to back!
 			unloadSong(true);
 
@@ -153,43 +155,15 @@ void MusicPlayer::playSong(std::string baseName) {
 	//lock to prevent updateCurrentSong() from changing state at the same time.
 	inPlay_ = false;
 
-	ofFile songGrab;
-	std::queue<ofFile> copy = getSongQueue();
-
-	while (copy.size() > 0) {
-		
-		ofFile frontFile = copy.front();
-		if (frontFile.getBaseName() == baseName) {
-			unloadSong(false);
-			putSongInFront(frontFile);
+	while (!inPlay_) {
+		if (songQueue_->front().getBaseName() == baseName) {
 			loadSongIntoPlayer(songQueue_->front());
 			playSongAtFront();
 			inPlay_ = true;
 			return;
 		}
-		
-		//iteration through queue
-		copy.pop();
-	}
-}
-
-void MusicPlayer::putSongInFront(ofFile songToMove) {
-	std::queue<ofFile> currentQueue = getSongQueue();
-	std::queue<ofFile> modifiedQueue;
-
-	modifiedQueue.push(songToMove);
-	while (currentQueue.size() > 0) {
-
-		//prevent duplicates
-		if (currentQueue.front().getBaseName() == songToMove.getBaseName()) {
-			currentQueue.pop();
-			continue;
+		else {
+			unloadSong(true);
 		}
-		modifiedQueue.push(currentQueue.front());
-		currentQueue.pop();
 	}
-
-	//change the queue to what we need --> move constructor makes it faster?
-	delete songQueue_;
-	songQueue_ = new std::queue<ofFile>(std::move(modifiedQueue));
 }

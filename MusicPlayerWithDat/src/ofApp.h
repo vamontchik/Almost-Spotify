@@ -3,14 +3,14 @@
 #include "ofMain.h"
 #include "ofxDatGui.h"
 #include "MusicPlayer.h"
+#include "ModifiedWireframe.h"
 
 class ofApp : public ofBaseApp {
 
 private:
-	ofxDatGui* panel_;
+	ofxDatGuiScrollView* scroller_;
 	ofxDatGuiTheme* theme_;
 	MusicPlayer* player_;
-	bool changingGui_ = false;
 
 private:
 	~ofApp();
@@ -18,8 +18,8 @@ private:
 	void update();
 	void draw();
 	void keyPressed(int key);
-	void mousePressed(int x, int y, int button);
-	void onButtonEvent(ofxDatGuiButtonEvent);
+	//void onButtonEvent(ofxDatGuiButtonEvent);
+	void onScrollViewEvent(ofxDatGuiScrollViewEvent);
 	void setupGUI();
 
 	/*
