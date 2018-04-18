@@ -10,7 +10,7 @@ private:
 	ofSoundPlayer* songPlayer_;
 	std::queue<ofFile>* songQueue_;
 	bool inPlay_;
-	bool updatedQueue_;
+	bool inChangingState_;
 
 	const std::string SONG_FOLDER_NAME = "songs";
 	const std::string SONG_FOLDER_PATH_PROMPT = "Path to Song Folder: ";
@@ -19,16 +19,20 @@ private:
 	const std::string ADDITION_TO_Q = "Added Song to Queue: ";
 	const std::string LOADED_TO_PLAYER = "Loaded Song into Player: ";
 	const std::string SONG_UNLOADED = "Song Unloaded: ";
-	const std::string END_OF_Q = "End of Queue!";
 	const std::string LOADING_SONGS_FROM_DIR = "Loading Songs from Directory...";
 	const std::string FINISHED_LOADING_FROM_DIR = "Finished Loading Songs from Directory!";
 	const std::string EMPTY_SONG_QUEUE = "Empty Song Queue!";
 	const std::string PAUSING_SONG = "Pausing Song: ";
 	const std::string UNPAUSING_SONG = "Unpausing Song: ";
-	const std::string SONG_PLAYING_RIGHT_NOW = "A Song is Currently Playing!";
-
+	
 private:
 	void initFolderProcess();
+	void loadSongsInDir();
+	void addSong(ofFile);
+	void loadSongIntoPlayer(ofFile);
+	void playSongAtFront();
+	void putSongInFront(ofFile);
+	void play();
 
 public:
 	MusicPlayer();											//default constructor
@@ -38,12 +42,11 @@ public:
 	MusicPlayer& operator=(MusicPlayer&&) = delete;			//move assignment operator
 	~MusicPlayer();											//destructor
 
-	void loadSongsInDir();
-	void addSong(ofFile);
-	void unloadSong();
-	void play();
+	void unloadSong(bool);
 	void changePauseState();
 	void skipToNext();
 	void updateCurrentSong();
-	void updateSongList(ofxDatGuiScrollView*);
+	bool inPlaySession();
+	std::queue<ofFile> getSongQueue();
+	void playSong(std::string);
 };

@@ -15,12 +15,12 @@ void MusicPlayer::initFolderProcess() {
 }
 
 MusicPlayer::MusicPlayer() 
-	: songFolder_(nullptr), songPlayer_(nullptr), songQueue_(nullptr),
-	  inPlay_(false), updatedQueue_(false)
+	: songFolder_(nullptr), songPlayer_(nullptr), songQueue_(nullptr), inPlay_(false), inChangingState_(false)
 {
 	initFolderProcess();
 	songPlayer_ = new ofSoundPlayer();
 	songQueue_ = new std::queue<ofFile>();
+	loadSongsInDir();
 }
 
 MusicPlayer::~MusicPlayer() 
@@ -58,27 +58,30 @@ void MusicPlayer::addSong(ofFile fileToAdd) {
 		std::cout << ADDITION_TO_Q << fileToAdd.getFileName() << std::endl;
 	}
 	else {
-		songPlayer_->load(fileToAdd.getAbsolutePath());
+		loadSongIntoPlayer(fileToAdd);
 		songQueue_->push(fileToAdd);
 
 		std::cout << ADDITION_TO_Q << fileToAdd.getFileName() << std::endl;
-		std::cout << LOADED_TO_PLAYER << fileToAdd.getFileName() << std::endl;
 	}
-	
-	//flag for gui reset
-	updatedQueue_ = true;
 }
 
 /*
-	Unloads a song from the player and queue.
+	Unloads a song from the player and queue, putting the song to the end of the queue.
 */
-void MusicPlayer::unloadSong() {
+void MusicPlayer::unloadSong(bool pushSongBack) {
 	std::cout << SONG_UNLOADED << songQueue_->front().getFileName() << std::endl;
-	songPlayer_->unload();
-	songQueue_->pop();
 
-	//flag for gui reset
-	updatedQueue_ = true;
+	songPlayer_->unload();
+
+	if (pushSongBack) {
+		songQueue_->push(songQueue_->front());
+		songQueue_->pop();
+	}
+}
+
+void MusicPlayer::loadSongIntoPlayer(ofFile songFile) {
+	songPlayer_->load(songFile.getAbsolutePath(), true);
+	std::cout << LOADED_TO_PLAYER << songFile.getFileName() << std::endl;
 }
 
 /*
@@ -90,15 +93,8 @@ void MusicPlayer::play() {
 		std::cout << EMPTY_SONG_QUEUE << std::endl;
 		return;
 	}
-
-	if (songPlayer_->getIsPlaying()) {
-		std::cout << SONG_PLAYING_RIGHT_NOW << std::endl;
-		return;
-	}
-
 	inPlay_ = true;
-	songPlayer_->play();
-	std::cout << NOW_PLAYING << songQueue_->front().getFileName() << std::endl;
+	playSongAtFront();
 }
 
 void MusicPlayer::changePauseState() {
@@ -118,10 +114,12 @@ void MusicPlayer::changePauseState() {
 void MusicPlayer::skipToNext() {
 	if (songPlayer_->getIsPlaying()) {
 		songPlayer_->stop(); //the next update call will start the next song
-
-		//trigger gui flag to reset
-		updatedQueue_ = true;
 	}
+}
+
+void MusicPlayer::playSongAtFront() {
+	songPlayer_->play();
+	std::cout << NOW_PLAYING << songQueue_->front().getFileName() << std::endl;
 }
 
 /*
@@ -132,49 +130,66 @@ void MusicPlayer::skipToNext() {
 void MusicPlayer::updateCurrentSong() {
 	if (inPlay_) {
 		if (!songPlayer_->getIsPlaying()) {
-			if (songQueue_->size() > 1) {
-				//grab next song (2nd item in queue) from front of the queue. 
-				unloadSong();
-				ofFile nextSong = songQueue_->front();
+			//it's ok to use front() because the front has been pushed to back!
+			unloadSong(true);
 
-				//load and play the song using the reference to the file
-				songPlayer_->load(nextSong.getAbsolutePath());
-				std::cout << LOADED_TO_PLAYER << nextSong.getFileName() << std::endl;
-				
-				songPlayer_->play();
-				std::cout << NOW_PLAYING << nextSong.getFileName() << std::endl;
-			}
-			else {
-				//unload the last song to prevent it from 
-				//hogging memory in both queue and player
-				unloadSong();
+			loadSongIntoPlayer(songQueue_->front());
 
-				//print out end state
-				std::cout << END_OF_Q << std::endl;
-
-				//set inPlay_ variable to false to prevent
-				//repeated calls to unload() and pop()
-				inPlay_ = false;
-			}
-
-			//flag for gui reset
-			updatedQueue_ = true;
+			//play the song at the front!
+			playSongAtFront();
 		}
 	}
 }
 
-//Use scroll view b/c it has a clear() method... :3
-void MusicPlayer::updateSongList(ofxDatGuiScrollView* scrollViewPtr) {
-	if (updatedQueue_) {
-		std::deque<ofFile> allowTraversal = songQueue_->_Get_container();
+bool MusicPlayer::inPlaySession() {
+	return inPlay_;
+}
 
-		//add in a scroll view for each song
-		scrollViewPtr->clear();
-		for (ofFile songFile : allowTraversal) {
-			scrollViewPtr->add(songFile.getBaseName());
+std::queue<ofFile> MusicPlayer::getSongQueue() {
+	return *songQueue_;
+}
+
+void MusicPlayer::playSong(std::string baseName) {
+	//lock to prevent updateCurrentSong() from changing state at the same time.
+	inPlay_ = false;
+
+	ofFile songGrab;
+	std::queue<ofFile> copy = getSongQueue();
+
+	while (copy.size() > 0) {
+		
+		ofFile frontFile = copy.front();
+		if (frontFile.getBaseName() == baseName) {
+			unloadSong(false);
+			putSongInFront(frontFile);
+			loadSongIntoPlayer(songQueue_->front());
+			playSongAtFront();
+			inPlay_ = true;
+			return;
 		}
-
-		//reset GUI flag because it's been updated
-		updatedQueue_ = false;
+		
+		//iteration through queue
+		copy.pop();
 	}
+}
+
+void MusicPlayer::putSongInFront(ofFile songToMove) {
+	std::queue<ofFile> currentQueue = getSongQueue();
+	std::queue<ofFile> modifiedQueue;
+
+	modifiedQueue.push(songToMove);
+	while (currentQueue.size() > 0) {
+
+		//prevent duplicates
+		if (currentQueue.front().getBaseName() == songToMove.getBaseName()) {
+			currentQueue.pop();
+			continue;
+		}
+		modifiedQueue.push(currentQueue.front());
+		currentQueue.pop();
+	}
+
+	//change the queue to what we need --> move constructor makes it faster?
+	delete songQueue_;
+	songQueue_ = new std::queue<ofFile>(std::move(modifiedQueue));
 }

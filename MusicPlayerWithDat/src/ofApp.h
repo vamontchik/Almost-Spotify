@@ -7,21 +7,20 @@
 class ofApp : public ofBaseApp {
 
 private:
+	ofxDatGui* panel_;
+	ofxDatGuiTheme* theme_;
+	MusicPlayer* player_;
+	bool changingGui_ = false;
+
+private:
 	~ofApp();
 	void setup();
 	void update();
 	void draw();
-		
-private:
-	ofxDatGuiScrollView* scrollView_;
-	ofxDatGui* panel_;
-	ofxDatGuiTheme* theme_;
-	MusicPlayer* player_;
-
-private:
-	void onScrollViewEvent(ofxDatGuiScrollViewEvent e);
 	void keyPressed(int key);
 	void mousePressed(int x, int y, int button);
+	void onButtonEvent(ofxDatGuiButtonEvent);
+	void setupGUI();
 
 	/*
 	Default event listeners from base gui. Not used.
