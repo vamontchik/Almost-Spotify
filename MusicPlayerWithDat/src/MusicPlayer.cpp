@@ -15,7 +15,8 @@ void MusicPlayer::initFolderProcess() {
 }
 
 MusicPlayer::MusicPlayer() 
-	: songFolder_(nullptr), songPlayer_(nullptr), songQueue_(nullptr), inPlay_(false), inChangingState_(false)
+	: songFolder_(nullptr), songPlayer_(nullptr), songQueue_(nullptr), 
+	  inPlay_(false), inChangingState_(false), isPaused_(false)
 {
 	initFolderProcess();
 	songPlayer_ = new ofSoundPlayer();
@@ -99,16 +100,15 @@ void MusicPlayer::play() {
 }
 
 void MusicPlayer::changePauseState() {
-	static bool notPaused = true; // bad solution to the fact that there's no isPaused() ...
-	if (notPaused) {
+	if (!isPaused_) {
 		std::cout << PAUSING_SONG << songQueue_->front().getFileName() << std::endl;
 		songPlayer_->setPaused(true);
-		notPaused = false;
+		isPaused_ = true;
 	}
 	else {
 		std::cout << UNPAUSING_SONG << songQueue_->front().getFileName() << std::endl;
 		songPlayer_->setPaused(false);
-		notPaused = true;
+		isPaused_ = false;
 	}
 }
 
@@ -151,6 +151,10 @@ std::queue<ofFile> MusicPlayer::getSongQueue() {
 	return *songQueue_;
 }
 
+bool MusicPlayer::isPaused() {
+	return isPaused_;
+}
+
 void MusicPlayer::playSong(std::string baseName) {
 	//lock to prevent updateCurrentSong() from changing state at the same time.
 	inPlay_ = false;
@@ -166,4 +170,16 @@ void MusicPlayer::playSong(std::string baseName) {
 			unloadSong(true);
 		}
 	}
+}
+
+void MusicPlayer::setVolume(double value) {
+	songPlayer_->setVolume(value);
+}
+
+void MusicPlayer::setPosition(double value) {
+	songPlayer_->setPosition(value);
+}
+
+void MusicPlayer::updateSongPosition(ofxDatGuiSlider* sliderPtr) {
+	sliderPtr->setValue(songPlayer_->getPosition());
 }

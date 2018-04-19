@@ -8,9 +8,19 @@
 class ofApp : public ofBaseApp {
 
 private:
+	ofxDatGuiSlider* volSlider_;
+	ofxDatGuiSlider* songPositionSlider_;
+	ofxDatGuiLabel* playlistLabel_;
+	ofxDatGuiLabel* endLabel_;
 	ofxDatGuiScrollView* scroller_;
 	ofxDatGuiTheme* theme_;
 	MusicPlayer* player_;
+
+	const double SLIDER_MIN_VAL = 0.0;
+	const double SLIDER_MAX_VAL = 1.0;
+	const int LABEL_LENGTH = 150;
+	const double INITIAL_VOLUME = 0.2;
+	const double INITIAL_POSITION = 0.0;
 
 private:
 	~ofApp();
@@ -18,9 +28,10 @@ private:
 	void update();
 	void draw();
 	void keyPressed(int key);
-	//void onButtonEvent(ofxDatGuiButtonEvent);
 	void onScrollViewEvent(ofxDatGuiScrollViewEvent);
-	void setupGUI();
+	void onVolSliderEvent(ofxDatGuiSliderEvent);
+	void onPosSliderEvent(ofxDatGuiSliderEvent);
+	void setupGUI(int);
 
 	/*
 	Default event listeners from base gui. Not used.

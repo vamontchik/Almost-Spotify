@@ -11,6 +11,7 @@ private:
 	std::queue<ofFile>* songQueue_;
 	bool inPlay_;
 	bool inChangingState_;
+	bool isPaused_;
 
 	const std::string SONG_FOLDER_NAME = "songs";
 	const std::string SONG_FOLDER_PATH_PROMPT = "Path to Song Folder: ";
@@ -47,5 +48,9 @@ public:
 	void updateCurrentSong();
 	bool inPlaySession();
 	std::queue<ofFile> getSongQueue();
+	bool isPaused();
 	void playSong(std::string);
+	void setVolume(double);
+	void setPosition(double);
+	void updateSongPosition(ofxDatGuiSlider*);
 };
