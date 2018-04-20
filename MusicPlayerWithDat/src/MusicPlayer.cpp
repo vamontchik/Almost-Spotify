@@ -1,5 +1,25 @@
 #include "MusicPlayer.h"
 
+MusicPlayer::MusicPlayer()
+	: songFolder_(nullptr), songPlayer_(nullptr), songQueue_(nullptr),
+	inPlay_(false), inChangingState_(false), isPaused_(false)
+{
+	initFolderProcess();
+	songPlayer_ = new ofSoundPlayer();
+	songQueue_ = new std::queue<ofFile>();
+	loadSongsFromDir();
+}
+
+MusicPlayer::~MusicPlayer()
+{
+	delete songFolder_;
+	delete songPlayer_;
+	delete songQueue_;
+}
+
+/*
+	Initializes the ofDirectory object, as necessary.
+*/
 void MusicPlayer::initFolderProcess() {
 	songFolder_ = new ofDirectory("songs");
 	std::cout << SONG_FOLDER_PATH_PROMPT << songFolder_->getAbsolutePath() << std::endl;
@@ -14,25 +34,11 @@ void MusicPlayer::initFolderProcess() {
 	songFolder_->listDir();
 }
 
-MusicPlayer::MusicPlayer() 
-	: songFolder_(nullptr), songPlayer_(nullptr), songQueue_(nullptr), 
-	  inPlay_(false), inChangingState_(false), isPaused_(false)
-{
-	initFolderProcess();
-	songPlayer_ = new ofSoundPlayer();
-	songQueue_ = new std::queue<ofFile>();
-	loadSongsInDir();
-}
-
-MusicPlayer::~MusicPlayer() 
-{
-	delete songFolder_;
-	delete songPlayer_;
-	delete songQueue_;
-}
-
-
-void MusicPlayer::loadSongsInDir() {
+/*
+	Loads all the files from the directory (stored the ofDirectory object)
+	into the internal queue.
+*/
+void MusicPlayer::loadSongsFromDir() {
 	std::cout << LOADING_SONGS_FROM_DIR << std::endl;
 	std::vector<ofFile> songs = songFolder_->getFiles();
 
@@ -42,34 +48,37 @@ void MusicPlayer::loadSongsInDir() {
 	}
 
 	for (ofFile song : songs) {
-		addSong(song);
+		addSongToQueue(song);
 	}
 
 	std::cout << FINISHED_LOADING_FROM_DIR << std::endl;
 }
 
 /*
-	Loads songs into the queue. Player is left empty.
+	Adds a song file to the internal queue.
 */
-void MusicPlayer::addSong(ofFile fileToAdd) {
+void MusicPlayer::addSongToQueue(ofFile fileToAdd) {
 	songQueue_->push(fileToAdd);
 	std::cout << ADDITION_TO_Q << fileToAdd.getFileName() << std::endl;
 }
 
 /*
-	Unloads a song from the player and queue, putting the song to the end of the queue.
+	Unloads the song from the player. If the specified value is true,
+	will push the song at the front of the queue to the back.
 */
 void MusicPlayer::unloadSong(bool pushSongBack) {
 	std::cout << SONG_UNLOADED << songQueue_->front().getFileName() << std::endl;
 
 	songPlayer_->unload();
-
 	if (pushSongBack) {
 		songQueue_->push(songQueue_->front());
 		songQueue_->pop();
 	}
 }
 
+/*
+	Loads a song file into internal sound player.
+*/
 void MusicPlayer::loadSongIntoPlayer(ofFile songFile) {
 	// Use "true" so it streams files instead of loading the into memory...
 	songPlayer_->load(songFile.getAbsolutePath(), true);
@@ -89,6 +98,9 @@ void MusicPlayer::play() {
 	playSongAtFront();
 }
 
+/*
+	Changes whether the player is paused or unpaused.
+*/
 void MusicPlayer::changePauseState() {
 	if (!isPaused_) {
 		std::cout << PAUSING_SONG << songQueue_->front().getFileName() << std::endl;
@@ -102,12 +114,18 @@ void MusicPlayer::changePauseState() {
 	}
 }
 
+/*
+	Skips to the next song in the queue.
+*/
 void MusicPlayer::skipToNext() {
 	if (songPlayer_->getIsPlaying()) {
 		songPlayer_->stop(); //the next update call will start the next song
 	}
 }
 
+/*
+	Plays the song at the front of the queue.
+*/
 void MusicPlayer::playSongAtFront() {
 	songPlayer_->play();
 	std::cout << NOW_PLAYING << songQueue_->front().getFileName() << std::endl;
@@ -133,18 +151,40 @@ void MusicPlayer::updateCurrentSong() {
 	}
 }
 
+/*
+	Returns whether or not this player is in a play session.
+
+	Note: This variable is mostly used to guard againts wierd update
+	issues, such as when the internal state is changing and we don't
+	want our update method to do anything.
+*/
 bool MusicPlayer::inPlaySession() {
 	return inPlay_;
 }
 
+/*
+	Returns a copy of the internal song queue.
+*/
 std::queue<ofFile> MusicPlayer::getSongQueue() {
 	return *songQueue_;
 }
 
+/*
+	Returns whether or not this player is paused. This is changed solely
+	by the changePauseState() method.
+
+	Note: Upon initialization, this is set to false to allow the changePauseState()
+	method to work properly.
+*/
 bool MusicPlayer::isPaused() {
 	return isPaused_;
 }
 
+/*
+	Skips through the contents of the queue, pushing song files to the back,
+	until we reach the file that the user has selected. Then, start
+	play of the song.
+*/
 void MusicPlayer::playSong(std::string baseName) {
 	//lock to prevent updateCurrentSong() from changing state at the same time.
 	inPlay_ = false;
@@ -161,18 +201,32 @@ void MusicPlayer::playSong(std::string baseName) {
 	}
 }
 
+/*
+	Sets the volume of the player, based on user input.
+*/
 void MusicPlayer::setVolume(double value) {
 	songPlayer_->setVolume(value);
 }
 
+/*
+	Sets the position at which the song will play at.
+*/
 void MusicPlayer::setPosition(double value) {
 	songPlayer_->setPosition(value);
 }
 
+/*
+	Updates the value in song position slider's text field.
+	This is called on each call to update() in the GUI.
+*/
 void MusicPlayer::updateSongPosition(ofxDatGuiSlider* sliderPtr) {
 	sliderPtr->setValue(songPlayer_->getPosition());
 }
 
+/*
+	Updates the Now Playing label with the name of the current song,
+	if we are in a play session.
+*/
 void MusicPlayer::updateNowPlayingLabel(ofxDatGuiLabel* labelPtr) {
 	if (inPlay_) {
 		labelPtr->setLabel("Now Playing: " + songQueue_->front().getBaseName());

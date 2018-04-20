@@ -3,7 +3,6 @@
 /*
 TODO:
 	1) Is there a way to display mm:ss of the song?
-	2) Is there a way to increase the scroll speed?
 */
 
 ofApp::~ofApp() {
@@ -22,13 +21,12 @@ void ofApp::setup() {
 	player_ = new MusicPlayer();
 
 	//Screen settings
-	ofSetBackgroundColor(ofColor::black);
 	ofSetWindowPosition(
 		ofGetScreenWidth() / 2 - ofGetWidth() / 2, 
-		ofGetScreenHeight() / 2 - ofGetWidth() / 2
+		ofGetScreenHeight() / 2 - ofGetHeight() / 2
 	);
 
-	//GUIsSetup ---> all components
+	//Setup for all GUI components
 	setupGUI(player_->getSongQueue().size());
 
 	//Frame limit to lessen work done by GPU
@@ -85,9 +83,8 @@ void ofApp::setupGUI(int nVisible) {
 	}
 	endLabel_->setVisible(true);
 
-	/*
-		Create position slider
-	*/
+
+	//Create position slider
 	songPositionSlider_ = new ofxDatGuiSlider("Song Position", SLIDER_MIN_VAL, SLIDER_MAX_VAL, INITIAL_POSITION);
 	songPositionSlider_->setPrecision(4);
 	songPositionSlider_->setTheme(theme_);
@@ -99,10 +96,9 @@ void ofApp::setupGUI(int nVisible) {
 	songPositionSlider_->onSliderEvent(this, &ofApp::onPosSliderEvent);
 	songPositionSlider_->setVisible(true);
 
-	/*
-	Create volume slider
-		- Also sets this init value to the volume of the player, to keep it consistent.
-	*/
+
+	//Create volume slider
+	//	- Also sets this init value to the volume of the player, to keep it consistent.
 	volSlider_ = new ofxDatGuiSlider("Volume", SLIDER_MIN_VAL, SLIDER_MAX_VAL, INITIAL_VOLUME);
 	volSlider_->setPrecision(2);
 	volSlider_->setTheme(theme_);
@@ -116,13 +112,10 @@ void ofApp::setupGUI(int nVisible) {
 	volSlider_->onSliderEvent(this, &ofApp::onVolSliderEvent);
 	volSlider_->setVisible(true);
 
-	/* player vol set here */
+	// Player volume init
 	player_->setVolume(volSlider_->getValue());
 
-
-	/*
-		Create the label for the current song
-	*/
+	// Now Playing label
 	nowPlayingLabel_ = new ofxDatGuiLabel("Now Playing: ");
 	nowPlayingLabel_->setPosition(
 		0,
@@ -151,7 +144,7 @@ void ofApp::setupGUI(int nVisible) {
 }
 
 void ofApp::update() {
-	//GUI update() calls
+	//Explicit calls to update() to ensure they are updated correctly
 	volSlider_->update();
 	songPositionSlider_->update();
 	nowPlayingLabel_->update();
@@ -159,7 +152,8 @@ void ofApp::update() {
 	endLabel_->update();
 	if (scroller_) scroller_->update();
 
-	//Player specific changes
+	//Player specific calls for updating components that rely
+	//on the state of the music player
 	player_->updateCurrentSong();
 	if (!player_->isPaused()) {
 		player_->updateSongPosition(songPositionSlider_);
@@ -168,7 +162,7 @@ void ofApp::update() {
 }
 
 void ofApp::draw() {
-	//GUI draw() calls
+	//Explicit calls to draw() to ensure they are drawn correctly
 	volSlider_->draw();
 	songPositionSlider_->draw();
 	nowPlayingLabel_->draw();
@@ -197,8 +191,5 @@ void ofApp::keyPressed(int key) {
 		if (player_->inPlaySession()) {
 			player_->changePauseState();
 		}
-	}
-	else if (key == 's') {
-		player_->skipToNext();
 	}
 }

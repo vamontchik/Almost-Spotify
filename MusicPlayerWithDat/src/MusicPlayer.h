@@ -28,19 +28,19 @@ private:
 	
 private:
 	void initFolderProcess();
-	void loadSongsInDir();
-	void addSong(ofFile);
+	void loadSongsFromDir();
+	void addSongToQueue(ofFile);
 	void loadSongIntoPlayer(ofFile);
 	void playSongAtFront();
 	void play();
 
 public:
-	MusicPlayer();											//default constructor
-	MusicPlayer(const MusicPlayer&) = delete;				//copy constructor
-	MusicPlayer(MusicPlayer&&) = delete;					//move constructor
-	MusicPlayer& operator=(const MusicPlayer&) = delete;	//copy assignment operator
-	MusicPlayer& operator=(MusicPlayer&&) = delete;			//move assignment operator
-	~MusicPlayer();											//destructor
+	MusicPlayer();                                          //default constructor
+	MusicPlayer(const MusicPlayer&) = delete;               //copy constructor
+	MusicPlayer(MusicPlayer&&) = delete;                    //move constructor
+	MusicPlayer& operator=(const MusicPlayer&) = delete;    //copy assignment operator
+	MusicPlayer& operator=(MusicPlayer&&) = delete;         //move assignment operator
+	~MusicPlayer();                                         //destructor
 
 	void unloadSong(bool);
 	void changePauseState();
