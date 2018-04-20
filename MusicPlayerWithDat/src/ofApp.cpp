@@ -3,6 +3,8 @@
 /*
 TODO:
 	1) Is there a way to display mm:ss of the song?
+		- Implement the usage of length display the fraction of current
+		time versus total time found in calculation. (using getPositionMS() / 1000.0)
 */
 
 /*
@@ -11,6 +13,10 @@ TODO:
 ofApp::~ofApp() {
 	delete volSlider_;
 	delete songPositionSlider_;
+	delete songInfoLabel_;
+	delete songLengthLabel_;
+	delete songSizeLabel_;
+	delete songPosFractionLabel_;
 	delete nowPlayingLabel_;
 	delete playlistLabel_;
 	delete endLabel_;
@@ -110,6 +116,18 @@ void ofApp::setupGUI(int nVisible) {
 	songSizeLabel_->setLabelAlignment(ofxDatGuiAlignment::LEFT);
 	songSizeLabel_->setVisible(true);
 
+	songPosFractionLabel_ = new ofxDatGuiLabel(SONG_FRAC_TITLE);
+	songPosFractionLabel_->setPosition(
+		ofGetWidth() / 2,
+		songInfoLabel_->getHeight() +
+		songLengthLabel_->getHeight() +
+		songSizeLabel_->getHeight()
+	);
+	songPosFractionLabel_->setTheme(theme_);
+	songPosFractionLabel_->setWidth(ofGetWidth() / 2);
+	songPosFractionLabel_->setLabelAlignment(ofxDatGuiAlignment::LEFT);
+	songPosFractionLabel_->setVisible(true);
+
 	//Label that signifies the end of the playlist
 	endLabel_ = new ofxDatGuiLabel(END_TITLE);
 	endLabel_->setTheme(theme_);
@@ -203,6 +221,7 @@ void ofApp::update() {
 	songInfoLabel_->update();
 	songLengthLabel_->update();
 	songSizeLabel_->update();
+	songPosFractionLabel_->update();
 	nowPlayingLabel_->update();
 	playlistLabel_->update();
 	endLabel_->update();
@@ -215,6 +234,7 @@ void ofApp::update() {
 		SONG_SIZE_TITLE, songSizeLabel_
 	);
 	player_->updateSongPosition(songPositionSlider_);
+	player_->updateSongPosFractionLabel(SONG_FRAC_TITLE, songPosFractionLabel_);
 }
 
 /*
@@ -228,6 +248,7 @@ void ofApp::draw() {
 	songInfoLabel_->draw();
 	songLengthLabel_->draw();
 	songSizeLabel_->draw();
+	songPosFractionLabel_->draw();
 	nowPlayingLabel_->draw();
 	playlistLabel_->draw();
 	endLabel_->draw();

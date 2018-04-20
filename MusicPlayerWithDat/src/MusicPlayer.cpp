@@ -270,24 +270,46 @@ void MusicPlayer::updateSongLengthLabel(std::string prefix, ofxDatGuiLabel* labe
 		songPlayer_->setPosition(0);
 		// END OF MAGIC TRICK
 
-		std::string postfixes[] = {
-			" seconds",
-			" minutes",
-			" hours"
-		};
+		//set instance variable to save time
+		song_length = length_inSeconds;
 
-		double modLength = length_inSeconds;
-		int postfixToUse = 0;
+		int seconds = song_length;
+		int minutes = song_length / 60;
+		int hours = song_length / 3600;
 
-		while (modLength > 60) {
-			modLength /= 60.0;
-			postfixToUse++;
+		bool printHours = false;
+
+		if (hours > 0) {
+			seconds -= hours * 3600;
+			printHours = true;
+		}
+		if (minutes > 0) {
+			seconds -= minutes * 60;
 		}
 
-		//truncated to two decimal places
-		std::string truncated = std::to_string(modLength).substr(0, 4);
+		std::string hoursStr = std::to_string(hours);
+		std::string minStr = std::to_string(minutes);
+		std::string secStr = std::to_string(seconds);
+		std::string divider = ":";
 
-		labelPtr->setLabel(prefix + truncated + postfixes[postfixToUse]);
+		if (printHours) {
+			labelPtr->setLabel(
+				prefix +
+				hoursStr +
+				divider +
+				minStr +
+				divider +
+				secStr
+			);
+		}
+		else {
+			labelPtr->setLabel(
+				prefix +
+				minStr +
+				divider +
+				secStr
+			);
+		}
 	}
 }
 
@@ -318,9 +340,64 @@ void MusicPlayer::updateSongSizeLabel(std::string prefix, ofxDatGuiLabel* labelP
 			postfixToUse++;
 		}
 
-		//truncated to two decimal places
-		std::string truncated = std::to_string(modSize).substr(0, 4);
+		//truncated to [PRECISION] decimal places
+		std::string truncated = std::to_string(modSize).substr(0, DIGITS + 1);
 
 		labelPtr->setLabel(prefix + truncated + postfixes[postfixToUse]);
+	}
+}
+
+void MusicPlayer::updateSongPosFractionLabel(std::string prefix, ofxDatGuiLabel* labelPtr) {
+	if (inPlay_) {
+		double current = songPlayer_->getPositionMS() / 1000.0;
+
+		int seconds = current;
+		int minutes = current / 60;
+		int hours = current / 3600;
+
+		bool printHours = false;
+
+		if (hours > 0) {
+			seconds -= hours * 3600;
+			printHours = true;
+		} 
+		if (minutes > 0) {
+			seconds -= minutes * 60;
+		}
+
+		std::string hoursStr = std::to_string(hours);
+
+		std::string minStr = std::to_string(minutes);
+		if (printHours) {
+			if (minutes < 10) {
+				minStr = "0" + minStr; //just some pretty formatting stuff
+			}
+		}
+
+		std::string secStr = std::to_string(seconds);
+		if (seconds < 10) {
+			secStr = "0" + secStr; //just some pretty formatting stuff
+		}
+
+		std::string divider = ":";
+
+		if (printHours) {
+			labelPtr->setLabel(
+				prefix +
+				hoursStr +
+				divider +
+				minStr +
+				divider +
+				secStr
+			);
+		}
+		else {
+			labelPtr->setLabel(
+				prefix +
+				minStr +
+				divider +
+				secStr
+			);
+		}
 	}
 }

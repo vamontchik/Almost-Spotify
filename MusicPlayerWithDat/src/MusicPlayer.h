@@ -11,6 +11,7 @@ private:
 	std::queue<ofFile>* songQueue_;
 	bool inPlay_;
 	bool isPaused_;
+	double song_length;
 
 	const std::string SONG_FOLDER_NAME = "songs";
 	const std::string SONG_FOLDER_PATH_PROMPT = "Path to Song Folder: ";
@@ -25,6 +26,9 @@ private:
 	const std::string PAUSING_SONG = "Pausing Song: ";
 	const std::string UNPAUSING_SONG = "Unpausing Song: ";
 	
+	//number of digits to display
+	const int DIGITS = 4;
+
 private:
 	void initFolderProcess();
 	void loadSongsFromDir();
@@ -59,4 +63,5 @@ public:
 	void updateNowPlayingLabel(std::string, ofxDatGuiLabel*);
 	void updateSongLengthLabel(std::string, ofxDatGuiLabel*);
 	void updateSongSizeLabel(std::string, ofxDatGuiLabel*);
+	void updateSongPosFractionLabel(std::string, ofxDatGuiLabel*);
 };

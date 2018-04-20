@@ -13,6 +13,7 @@ private:
 	ofxDatGuiLabel* songInfoLabel_;
 	ofxDatGuiLabel* songLengthLabel_;
 	ofxDatGuiLabel* songSizeLabel_;
+	ofxDatGuiLabel* songPosFractionLabel_;
 	ofxDatGuiLabel* nowPlayingLabel_;
 	ofxDatGuiLabel* playlistLabel_;
 	ofxDatGuiLabel* endLabel_;
@@ -34,6 +35,7 @@ private:
 	const std::string SONG_POS_SLIDER_TITLE = "Song Position";
 	const std::string VOLUME_SLIDER_TITLE = "Volume";
 	const std::string NOW_PLAYING_INFO_TITLE = "Now Playing: ";
+	const std::string SONG_FRAC_TITLE = "Position: ";
 
 private:
 	~ofApp();
