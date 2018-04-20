@@ -2,7 +2,7 @@
 
 MusicPlayer::MusicPlayer()
 	: songFolder_(nullptr), songPlayer_(nullptr), songQueue_(nullptr),
-	inPlay_(false), inChangingState_(false), isPaused_(false)
+	inPlay_(false), isPaused_(false)
 {
 	initFolderProcess();
 	songPlayer_ = new ofSoundPlayer();
@@ -134,7 +134,11 @@ void MusicPlayer::playSongAtFront() {
 /*
 	Called by update() to transition to the next song in the queue, if possible.
 */
-void MusicPlayer::updateCurrentSong() {
+void MusicPlayer::updateCurrentSong(
+	std::string nowPlayingPrefix, ofxDatGuiLabel* nowPlayingPtr,
+	std::string songLengthPrefix, ofxDatGuiLabel* songLengthPtr,
+	std::string songSizePrefix, ofxDatGuiLabel* songSizePtr) 
+{
 	if (inPlay_) {
 		//check if either:
 		//	(1) a song has been stopped with the stop() method
@@ -147,6 +151,11 @@ void MusicPlayer::updateCurrentSong() {
 
 			//play the song at the front!
 			playSongAtFront();
+
+			//update the GUI elements for song info and "now playing"
+			updateNowPlayingLabel(nowPlayingPrefix, nowPlayingPtr);
+			updateSongLengthLabel(songLengthPrefix, songLengthPtr);
+			updateSongSizeLabel(songSizePrefix, songSizePtr);
 		}
 	}
 }
@@ -222,19 +231,96 @@ void MusicPlayer::setPosition(double value) {
 }
 
 /*
-	Updates the value in song position slider's text field.
+	Updates the value in song position slider's text field, if not paused.
 	This is called on each call to update() in the GUI.
 */
 void MusicPlayer::updateSongPosition(ofxDatGuiSlider* sliderPtr) {
-	sliderPtr->setValue(songPlayer_->getPosition());
+	if (!isPaused_) {
+		sliderPtr->setValue(songPlayer_->getPosition());
+	}
 }
 
 /*
 	Updates the Now Playing label with the name of the current song,
 	if we are in a play session.
 */
-void MusicPlayer::updateNowPlayingLabel(ofxDatGuiLabel* labelPtr) {
+void MusicPlayer::updateNowPlayingLabel(std::string prefix, ofxDatGuiLabel* labelPtr) {
 	if (inPlay_) {
-		labelPtr->setLabel("Now Playing: " + songQueue_->front().getBaseName());
+		labelPtr->setLabel(prefix + songQueue_->front().getBaseName());
+	}
+}
+
+/*
+	Updates the song length label with the correct data and format.
+
+	Note: This will enter undefined behavior if the songQueue has a file
+	that is longer than 60 hours, due to the array operator[] call.
+	Thankfully, most users won't have that issue.
+*/
+void MusicPlayer::updateSongLengthLabel(std::string prefix, ofxDatGuiLabel* labelPtr) {
+	if (inPlay_) {
+
+		// LENGTH TRICK GRAB: 
+		// https://forum.openframeworks.cc/t/ofsoundplayer-length/11560
+		//
+		// Note: This *is* a race condition but we ok because it's pretty fast ;)
+		ofFile toBePlayed = songQueue_->front();
+		songPlayer_->setPosition(0.9999999); //closest approx I can get is seven decimal places
+		double length_inSeconds = songPlayer_->getPositionMS() / 1000.0;
+		songPlayer_->setPosition(0);
+		// END OF MAGIC TRICK
+
+		std::string postfixes[] = {
+			" seconds",
+			" minutes",
+			" hours"
+		};
+
+		double modLength = length_inSeconds;
+		int postfixToUse = 0;
+
+		while (modLength > 60) {
+			modLength /= 60.0;
+			postfixToUse++;
+		}
+
+		//truncated to two decimal places
+		std::string truncated = std::to_string(modLength).substr(0, 4);
+
+		labelPtr->setLabel(prefix + truncated + postfixes[postfixToUse]);
+	}
+}
+
+/*
+	Updates the song size label with the correct data and format.
+
+	Note: This will enter undefined behavior if the songQueue has a file
+	that is larger than 1024 terabytes, due to the array operator[] call.
+	Thankfully, most users don't have that issue.
+*/
+void MusicPlayer::updateSongSizeLabel(std::string prefix, ofxDatGuiLabel* labelPtr) {
+	if (inPlay_) {
+		uint64_t size = songQueue_->front().getSize();
+		
+		std::string postfixes[] = {
+			" bytes", 
+			" kilobytes", 
+			" megabytes", 
+			" gigabytes", 
+			" terabytes"
+		};
+
+		double modSize = size;
+		int postfixToUse = 0;
+
+		while (modSize > 1024) {
+			modSize /= 1024.0;
+			postfixToUse++;
+		}
+
+		//truncated to two decimal places
+		std::string truncated = std::to_string(modSize).substr(0, 4);
+
+		labelPtr->setLabel(prefix + truncated + postfixes[postfixToUse]);
 	}
 }

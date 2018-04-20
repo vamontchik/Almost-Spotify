@@ -10,6 +10,9 @@ class ofApp : public ofBaseApp {
 private:
 	ofxDatGuiSlider* volSlider_;
 	ofxDatGuiSlider* songPositionSlider_;
+	ofxDatGuiLabel* songInfoLabel_;
+	ofxDatGuiLabel* songLengthLabel_;
+	ofxDatGuiLabel* songSizeLabel_;
 	ofxDatGuiLabel* nowPlayingLabel_;
 	ofxDatGuiLabel* playlistLabel_;
 	ofxDatGuiLabel* endLabel_;
@@ -22,6 +25,15 @@ private:
 	const int LABEL_LENGTH = 150;
 	const double INITIAL_VOLUME = 0.2;
 	const double INITIAL_POSITION = 0.0;
+
+	const std::string PLAYLIST_TITLE = "---- PLAYLIST ----";
+	const std::string SONG_INFO_TITLE = "Song Info";
+	const std::string SONG_SIZE_TITLE = "Size: ";
+	const std::string SONG_LENGTH_TITLE = "Length: ";
+	const std::string END_TITLE = "---- SCROLL UP/DOWN FOR MORE SONGS ----";
+	const std::string SONG_POS_SLIDER_TITLE = "Song Position";
+	const std::string VOLUME_SLIDER_TITLE = "Volume";
+	const std::string NOW_PLAYING_INFO_TITLE = "Now Playing: ";
 
 private:
 	~ofApp();

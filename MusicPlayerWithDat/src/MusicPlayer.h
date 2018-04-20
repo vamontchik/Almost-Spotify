@@ -10,7 +10,6 @@ private:
 	ofSoundPlayer* songPlayer_;
 	std::queue<ofFile>* songQueue_;
 	bool inPlay_;
-	bool inChangingState_;
 	bool isPaused_;
 
 	const std::string SONG_FOLDER_NAME = "songs";
@@ -45,7 +44,11 @@ public:
 	void unloadSong(bool);
 	void changePauseState();
 	void skipToNext();
-	void updateCurrentSong();
+	void updateCurrentSong(
+		std::string, ofxDatGuiLabel*,
+		std::string, ofxDatGuiLabel*,
+		std::string, ofxDatGuiLabel*
+	);
 	bool inPlaySession();
 	std::queue<ofFile> getSongQueue();
 	bool isPaused();
@@ -53,5 +56,7 @@ public:
 	void setVolume(double);
 	void setPosition(double);
 	void updateSongPosition(ofxDatGuiSlider*);
-	void updateNowPlayingLabel(ofxDatGuiLabel*);
+	void updateNowPlayingLabel(std::string, ofxDatGuiLabel*);
+	void updateSongLengthLabel(std::string, ofxDatGuiLabel*);
+	void updateSongSizeLabel(std::string, ofxDatGuiLabel*);
 };

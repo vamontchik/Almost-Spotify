@@ -15,7 +15,9 @@ Usage is intuitive: The GUI presents play/pause buttons for playing and pausing
 the song, buttons to select which song you want to play, some sliders to adjust
 volume and where in the song you want to be at.
 
-A keyboard shortcut: Pressing the spacebar will pause/unpause the song.
+Keyboard shortcuts:
+- Pressing the spacebar will pause/unpause the song.
+- Pressing ESC will exit the program.
 
 # Notes
 
@@ -51,9 +53,9 @@ While tempting, it is best not to select and type in the values in the text
 fields associated with sliders. While doing so is totally safe with the volume
 slider, there is a huge (and unnecessary) spike in memory usage as a result.
 Also, due to the nature of how the song position slider's value is being constantly
-updated, it is possible to crash the program if you type in *a decimal number
-with too many decimal points!* Not only will the values you type in not be visible,
+updated, it is possible to crash the program! If one is to type in a value into
+the song position slider's text field, not only will the values you type in not be visible
 and a simple moving cursor will be the only indicator of you even doing anything,
-the potential to crash the program is apparent. If you really need to type
+but you can also **crash the program if you type in too many values**. If you really need to type
 in a value for the position slider, pause the song, then type it in, and then
 unpause the song to hear it at that location.

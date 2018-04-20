@@ -47,35 +47,73 @@ void ofApp::setupGUI(int nVisible) {
 	theme_ = new ModifiedWireframe();
 
 	//Label above playlist
-	playlistLabel_ = new ofxDatGuiLabel("---- PLAYLIST ----");
+	playlistLabel_ = new ofxDatGuiLabel(PLAYLIST_TITLE);
 	playlistLabel_->setPosition(0, 0);
 	playlistLabel_->setTheme(theme_);
-	playlistLabel_->setWidth(ofGetWidth());
+	playlistLabel_->setWidth(ofGetWidth() / 2);
 	playlistLabel_->setLabelAlignment(ofxDatGuiAlignment::CENTER);
 	playlistLabel_->setVisible(true);
 	
 	/*
-	Scroll view for songs / buttons, Event listener for scroll view
+	Scroll view for songs / buttons, Event listener for scroll view, and Info Labels
 		- Sets the nVisible size to up to 10, but can be less if there are less songs!
 		- Explicit check for 0 because 0 items to a scroll view breaks it :/
 	*/
 	if (nVisible > 0) {
-		scroller_ = new ofxDatGuiScrollView("PLAYLIST", min(nVisible, 10));
+		scroller_ = new ofxDatGuiScrollView("playlist", min(nVisible, 10));
 		scroller_->setPosition(0, playlistLabel_->getHeight());
 		scroller_->setTheme(theme_);
-		scroller_->setWidth(ofGetWidth());
+		scroller_->setWidth(ofGetWidth() / 2);
 		std::queue<ofFile> queue = player_->getSongQueue();
+		int count = 0;
 		while (queue.size() > 0) {
 			scroller_->add(queue.front().getBaseName());
+			count++;
 			queue.pop();
 		}
+		
 		scroller_->onScrollViewEvent(this, &ofApp::onScrollViewEvent);
+		scroller_->setVisible(true);
 	}
 
+	/*
+		Labels concerning the information of the song
+	*/
+	songInfoLabel_ = new ofxDatGuiLabel(SONG_INFO_TITLE);
+	songInfoLabel_->setPosition(
+		ofGetWidth() / 2, 
+		0
+	);
+	songInfoLabel_->setTheme(theme_);
+	songInfoLabel_->setWidth(ofGetWidth() / 2);
+	songInfoLabel_->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+	songInfoLabel_->setVisible(true);
+
+	songLengthLabel_ = new ofxDatGuiLabel(SONG_LENGTH_TITLE);
+	songLengthLabel_->setPosition(
+		ofGetWidth() / 2,
+		songInfoLabel_->getHeight()
+	);
+	songLengthLabel_->setTheme(theme_);
+	songLengthLabel_->setWidth(ofGetWidth() / 2);
+	songLengthLabel_->setLabelAlignment(ofxDatGuiAlignment::LEFT);
+	songLengthLabel_->setVisible(true);
+
+	songSizeLabel_ = new ofxDatGuiLabel(SONG_SIZE_TITLE);
+	songSizeLabel_->setPosition(
+		ofGetWidth() / 2, 
+		songInfoLabel_->getHeight() +
+		songLengthLabel_->getHeight()
+	);
+	songSizeLabel_->setTheme(theme_);
+	songSizeLabel_->setWidth(ofGetWidth() / 2);
+	songSizeLabel_->setLabelAlignment(ofxDatGuiAlignment::LEFT);
+	songSizeLabel_->setVisible(true);
+
 	//Label that signifies the end of the playlist
-	endLabel_ = new ofxDatGuiLabel("---- SCROLL UP/DOWN FOR MORE SONGS ----");
+	endLabel_ = new ofxDatGuiLabel(END_TITLE);
 	endLabel_->setTheme(theme_);
-	endLabel_->setWidth(ofGetWidth());
+	endLabel_->setWidth(ofGetWidth() / 2);
 	endLabel_->setLabelAlignment(ofxDatGuiAlignment::CENTER);
 	if (scroller_) {
 		endLabel_->setPosition(
@@ -94,7 +132,8 @@ void ofApp::setupGUI(int nVisible) {
 
 
 	//Create position slider
-	songPositionSlider_ = new ofxDatGuiSlider("Song Position", SLIDER_MIN_VAL, SLIDER_MAX_VAL, INITIAL_POSITION);
+	songPositionSlider_ = new ofxDatGuiSlider(SONG_POS_SLIDER_TITLE, 
+		SLIDER_MIN_VAL, SLIDER_MAX_VAL, INITIAL_POSITION);
 	songPositionSlider_->setPrecision(4);
 	songPositionSlider_->setTheme(theme_);
 	songPositionSlider_->setWidth(ofGetWidth(), LABEL_LENGTH);
@@ -108,7 +147,8 @@ void ofApp::setupGUI(int nVisible) {
 
 	//Create volume slider
 	//	- Also sets this init value to the volume of the player, to keep it consistent.
-	volSlider_ = new ofxDatGuiSlider("Volume", SLIDER_MIN_VAL, SLIDER_MAX_VAL, INITIAL_VOLUME);
+	volSlider_ = new ofxDatGuiSlider(VOLUME_SLIDER_TITLE, 
+		SLIDER_MIN_VAL, SLIDER_MAX_VAL, INITIAL_VOLUME);
 	volSlider_->setPrecision(2);
 	volSlider_->setTheme(theme_);
 	volSlider_->setWidth(ofGetWidth(), LABEL_LENGTH);
@@ -125,7 +165,7 @@ void ofApp::setupGUI(int nVisible) {
 	player_->setVolume(volSlider_->getValue());
 
 	// Now Playing label
-	nowPlayingLabel_ = new ofxDatGuiLabel("Now Playing: ");
+	nowPlayingLabel_ = new ofxDatGuiLabel(NOW_PLAYING_INFO_TITLE);
 	nowPlayingLabel_->setPosition(
 		0,
 		ofGetHeight() -
@@ -160,18 +200,21 @@ void ofApp::update() {
 	//Explicit calls to update() to ensure they are updated correctly
 	volSlider_->update();
 	songPositionSlider_->update();
+	songInfoLabel_->update();
+	songLengthLabel_->update();
+	songSizeLabel_->update();
 	nowPlayingLabel_->update();
 	playlistLabel_->update();
 	endLabel_->update();
 	if (scroller_) scroller_->update();
 
-	//Player specific calls for updating components that rely
-	//on the state of the music player
-	player_->updateCurrentSong();
-	if (!player_->isPaused()) {
-		player_->updateSongPosition(songPositionSlider_);
-	}
-	player_->updateNowPlayingLabel(nowPlayingLabel_);
+	//Player specific calls for updating components that rely on the state of the music player
+	player_->updateCurrentSong(
+		NOW_PLAYING_INFO_TITLE, nowPlayingLabel_,
+		SONG_LENGTH_TITLE, songLengthLabel_,
+		SONG_SIZE_TITLE, songSizeLabel_
+	);
+	player_->updateSongPosition(songPositionSlider_);
 }
 
 /*
@@ -182,6 +225,9 @@ void ofApp::draw() {
 	//Explicit calls to draw() to ensure they are drawn correctly
 	volSlider_->draw();
 	songPositionSlider_->draw();
+	songInfoLabel_->draw();
+	songLengthLabel_->draw();
+	songSizeLabel_->draw();
 	nowPlayingLabel_->draw();
 	playlistLabel_->draw();
 	endLabel_->draw();
@@ -192,7 +238,11 @@ void ofApp::draw() {
 	Event handler for the user selecting an element in scrollView.
 */
 void ofApp::onScrollViewEvent(ofxDatGuiScrollViewEvent e) {
-	player_->playSong(e.target->getName());
+	player_->playSong(e.target->getLabel());
+
+	player_->updateNowPlayingLabel(NOW_PLAYING_INFO_TITLE, nowPlayingLabel_);
+	player_->updateSongLengthLabel(SONG_LENGTH_TITLE, songLengthLabel_);
+	player_->updateSongSizeLabel(SONG_SIZE_TITLE, songSizeLabel_);
 }
 
 /*
@@ -208,7 +258,7 @@ void ofApp::onVolSliderEvent(ofxDatGuiSliderEvent e) {
 	Event handler for when the user changes the song position slider,
 	or types into the song position slider's text field and presses enter.
 
-	Note: Typing into this field is advisable only when the song is paused. See
+	Note: Typing into this slider's field is advisable only when the song is paused. See
 	README.md for more details.
 */
 void ofApp::onPosSliderEvent(ofxDatGuiSliderEvent e) {
