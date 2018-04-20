@@ -203,6 +203,8 @@ void MusicPlayer::playSong(std::string baseName) {
 
 /*
 	Sets the volume of the player, based on user input.
+
+	Note: Values range from 0.0 to 1.0, where 0.0 is muted, and 1.0 is the max volume.
 */
 void MusicPlayer::setVolume(double value) {
 	songPlayer_->setVolume(value);
@@ -210,6 +212,10 @@ void MusicPlayer::setVolume(double value) {
 
 /*
 	Sets the position at which the song will play at.
+
+	Note: Values range from 0.0 to 1.0, where 0.0 is the start, and 1.0 is the end of the song.
+	However, the player will ignore the value of 1.0 (for whatever iternal reason), so skipping
+	to the end by value means typing in 0.9999, not 1.0
 */
 void MusicPlayer::setPosition(double value) {
 	songPlayer_->setPosition(value);

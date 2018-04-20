@@ -5,6 +5,9 @@ TODO:
 	1) Is there a way to display mm:ss of the song?
 */
 
+/*
+	Destructor that deletes all the objects in this class.
+*/
 ofApp::~ofApp() {
 	delete volSlider_;
 	delete songPositionSlider_;
@@ -16,6 +19,9 @@ ofApp::~ofApp() {
 	delete player_;
 }
 
+/*
+	Setup method that acts like a constructor for this class.
+*/
 void ofApp::setup() {
 	//MusicPlayer setup ---> loads songs now and only once!
 	player_ = new MusicPlayer();
@@ -33,6 +39,9 @@ void ofApp::setup() {
 	ofSetFrameRate(60);
 }
 
+/*
+	Called by setup() to initialize all the GUI components.
+*/
 void ofApp::setupGUI(int nVisible) {
 	//Create theme to be used in components
 	theme_ = new ModifiedWireframe();
@@ -143,6 +152,10 @@ void ofApp::setupGUI(int nVisible) {
 	ofxSmartFont::list();
 }
 
+/*
+	Update method that updates all the components. Called at the rate at which
+	the framerate is specified.
+*/
 void ofApp::update() {
 	//Explicit calls to update() to ensure they are updated correctly
 	volSlider_->update();
@@ -161,6 +174,10 @@ void ofApp::update() {
 	player_->updateNowPlayingLabel(nowPlayingLabel_);
 }
 
+/*
+	Draw method that (re)draws all the components. Called at the rate at which
+	the framerate is specified.
+*/
 void ofApp::draw() {
 	//Explicit calls to draw() to ensure they are drawn correctly
 	volSlider_->draw();
@@ -171,21 +188,40 @@ void ofApp::draw() {
 	if (scroller_) scroller_->draw();
 }
 
+/*
+	Event handler for the user selecting an element in scrollView.
+*/
 void ofApp::onScrollViewEvent(ofxDatGuiScrollViewEvent e) {
 	player_->playSong(e.target->getName());
 }
 
+/*
+	Event handler for when the user changes the volume slider,
+	or types into the volume slider's text field and presses enter.
+*/
 void ofApp::onVolSliderEvent(ofxDatGuiSliderEvent e) {
+	//e.scale is more accurate than value, since it uses the precision you specify 
 	player_->setVolume(e.scale);
 }
 
+/*
+	Event handler for when the user changes the song position slider,
+	or types into the song position slider's text field and presses enter.
+
+	Note: Typing into this field is advisable only when the song is paused. See
+	README.md for more details.
+*/
 void ofApp::onPosSliderEvent(ofxDatGuiSliderEvent e) {
 	//prevents a wierd crash if you place it in this if statement
 	if (player_->inPlaySession()) {
+		//e.scale is more accurate than value, since it uses the precision you specify 
 		player_->setPosition(e.scale);
 	}
 }
 
+/*
+	Event handler for when a key is pressed by the user.
+*/
 void ofApp::keyPressed(int key) {
 	if (key == ' ') { //space bar
 		if (player_->inPlaySession()) {
