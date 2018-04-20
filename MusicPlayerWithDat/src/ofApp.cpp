@@ -9,6 +9,7 @@ TODO:
 ofApp::~ofApp() {
 	delete volSlider_;
 	delete songPositionSlider_;
+	delete nowPlayingLabel_;
 	delete playlistLabel_;
 	delete endLabel_;
 	delete scroller_;
@@ -84,12 +85,10 @@ void ofApp::setupGUI(int nVisible) {
 	}
 	endLabel_->setVisible(true);
 
-
-
 	/*
 		Create position slider
 	*/
-	songPositionSlider_ = new ofxDatGuiSlider("Song Location", SLIDER_MIN_VAL, SLIDER_MAX_VAL, INITIAL_POSITION);
+	songPositionSlider_ = new ofxDatGuiSlider("Song Position", SLIDER_MIN_VAL, SLIDER_MAX_VAL, INITIAL_POSITION);
 	songPositionSlider_->setPrecision(4);
 	songPositionSlider_->setTheme(theme_);
 	songPositionSlider_->setWidth(ofGetWidth(), LABEL_LENGTH);
@@ -110,13 +109,32 @@ void ofApp::setupGUI(int nVisible) {
 	volSlider_->setWidth(ofGetWidth(), LABEL_LENGTH);
 	volSlider_->setPosition(
 		0, 
-		ofGetHeight() - songPositionSlider_->getHeight() - volSlider_->getHeight()
+		ofGetHeight() - 
+		songPositionSlider_->getHeight() - 
+		volSlider_->getHeight()
 	);
 	volSlider_->onSliderEvent(this, &ofApp::onVolSliderEvent);
 	volSlider_->setVisible(true);
 
 	/* player vol set here */
 	player_->setVolume(volSlider_->getValue());
+
+
+	/*
+		Create the label for the current song
+	*/
+	nowPlayingLabel_ = new ofxDatGuiLabel("Now Playing: ");
+	nowPlayingLabel_->setPosition(
+		0,
+		ofGetHeight() -
+		volSlider_->getHeight() -
+		songPositionSlider_->getHeight() -
+		nowPlayingLabel_->getHeight()
+	);
+	nowPlayingLabel_->setTheme(theme_);
+	nowPlayingLabel_->setWidth(ofGetWidth());
+	nowPlayingLabel_->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+	nowPlayingLabel_->setVisible(true);
 
 	//total height --> for testing
 	int totalHeight = 0;
@@ -125,6 +143,7 @@ void ofApp::setupGUI(int nVisible) {
 	totalHeight += playlistLabel_->getHeight();
 	totalHeight += endLabel_->getHeight();
 	if (scroller_) totalHeight += scroller_->getHeight();
+	totalHeight += nowPlayingLabel_->getHeight();
 	std::cout << "Total Height: " << totalHeight << std::endl;
 
 	//Console output for all available fonts
@@ -132,23 +151,29 @@ void ofApp::setupGUI(int nVisible) {
 }
 
 void ofApp::update() {
-	playlistLabel_->update();
-	endLabel_->update();
+	//GUI update() calls
 	volSlider_->update();
 	songPositionSlider_->update();
+	nowPlayingLabel_->update();
+	playlistLabel_->update();
+	endLabel_->update();
 	if (scroller_) scroller_->update();
 
+	//Player specific changes
 	player_->updateCurrentSong();
 	if (!player_->isPaused()) {
 		player_->updateSongPosition(songPositionSlider_);
 	}
+	player_->updateNowPlayingLabel(nowPlayingLabel_);
 }
 
 void ofApp::draw() {
-	playlistLabel_->draw();
-	endLabel_->draw();
+	//GUI draw() calls
 	volSlider_->draw();
 	songPositionSlider_->draw();
+	nowPlayingLabel_->draw();
+	playlistLabel_->draw();
+	endLabel_->draw();
 	if (scroller_) scroller_->draw();
 }
 

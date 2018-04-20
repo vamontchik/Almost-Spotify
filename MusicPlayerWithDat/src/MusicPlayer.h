@@ -53,4 +53,5 @@ public:
 	void setVolume(double);
 	void setPosition(double);
 	void updateSongPosition(ofxDatGuiSlider*);
+	void updateNowPlayingLabel(ofxDatGuiLabel*);
 };

@@ -10,6 +10,7 @@ class ofApp : public ofBaseApp {
 private:
 	ofxDatGuiSlider* volSlider_;
 	ofxDatGuiSlider* songPositionSlider_;
+	ofxDatGuiLabel* nowPlayingLabel_;
 	ofxDatGuiLabel* playlistLabel_;
 	ofxDatGuiLabel* endLabel_;
 	ofxDatGuiScrollView* scroller_;

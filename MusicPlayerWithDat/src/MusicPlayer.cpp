@@ -49,21 +49,11 @@ void MusicPlayer::loadSongsInDir() {
 }
 
 /*
-	If the queue is empty, load into both the queue and player.
-	Else, only load it into the queue.
+	Loads songs into the queue. Player is left empty.
 */
 void MusicPlayer::addSong(ofFile fileToAdd) {
-	if (!songQueue_->empty()) {
-		songQueue_->push(fileToAdd);
-
-		std::cout << ADDITION_TO_Q << fileToAdd.getFileName() << std::endl;
-	}
-	else {
-		loadSongIntoPlayer(fileToAdd);
-		songQueue_->push(fileToAdd);
-
-		std::cout << ADDITION_TO_Q << fileToAdd.getFileName() << std::endl;
-	}
+	songQueue_->push(fileToAdd);
+	std::cout << ADDITION_TO_Q << fileToAdd.getFileName() << std::endl;
 }
 
 /*
@@ -164,7 +154,6 @@ void MusicPlayer::playSong(std::string baseName) {
 			loadSongIntoPlayer(songQueue_->front());
 			playSongAtFront();
 			inPlay_ = true;
-			return;
 		}
 		else {
 			unloadSong(true);
@@ -182,4 +171,10 @@ void MusicPlayer::setPosition(double value) {
 
 void MusicPlayer::updateSongPosition(ofxDatGuiSlider* sliderPtr) {
 	sliderPtr->setValue(songPlayer_->getPosition());
+}
+
+void MusicPlayer::updateNowPlayingLabel(ofxDatGuiLabel* labelPtr) {
+	if (inPlay_) {
+		labelPtr->setLabel("Now Playing: " + songQueue_->front().getBaseName());
+	}
 }
