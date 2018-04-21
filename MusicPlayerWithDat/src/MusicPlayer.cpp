@@ -288,8 +288,19 @@ void MusicPlayer::updateSongLengthLabel(std::string prefix, ofxDatGuiLabel* labe
 		}
 
 		std::string hoursStr = std::to_string(hours);
+
 		std::string minStr = std::to_string(minutes);
+		if (printHours) {
+			if (minutes < 10) {
+				minStr = "0" + minStr; //just some pretty formatting stuff
+			}
+		}
+
 		std::string secStr = std::to_string(seconds);
+		if (seconds < 10) {
+			secStr = "0" + secStr; //just some pretty formatting stuff
+		}
+
 		std::string divider = ":";
 
 		if (printHours) {
@@ -340,7 +351,6 @@ void MusicPlayer::updateSongSizeLabel(std::string prefix, ofxDatGuiLabel* labelP
 			postfixToUse++;
 		}
 
-		//truncated to [PRECISION] decimal places
 		std::string truncated = std::to_string(modSize).substr(0, DIGITS + 1);
 
 		labelPtr->setLabel(prefix + truncated + postfixes[postfixToUse]);
