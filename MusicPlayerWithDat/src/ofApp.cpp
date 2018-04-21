@@ -2,9 +2,9 @@
 
 /*
 TODO:
-	1) Is there a way to display mm:ss of the song?
-		- Implement the usage of length display the fraction of current
-		time versus total time found in calculation. (using getPositionMS() / 1000.0)
+	- Get rid of the text field's for each slider by drawing labels over them
+		---> Volume slider gets an empty label over it
+		---> Song Position slider gets the label w/ the hh:mm:ss time on it
 */
 
 /*
