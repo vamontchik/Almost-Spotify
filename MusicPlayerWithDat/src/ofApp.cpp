@@ -2,9 +2,14 @@
 
 /*
 TODO:
-	- Get rid of the text field's for each slider by drawing labels over them
+	1) Get rid of the text field's for each slider by drawing labels over them
 		---> Volume slider gets an empty label over it
 		---> Song Position slider gets the label w/ the hh:mm:ss time on it
+	2) Search funcionality
+		---> A box that the user is able to type the string they want to search for,
+		and the scroll list will update itself to only show the relevant stuff.
+		Once the search box is cleared, put back the full list.
+	3) Tagging functionality???
 */
 
 /*
