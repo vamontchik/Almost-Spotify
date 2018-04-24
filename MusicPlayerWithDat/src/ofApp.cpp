@@ -2,20 +2,21 @@
 
 /*
 TODO:
-	1) Get rid of the text field's for each slider by drawing labels over them
+	[???] 1) Get rid of the text field's for each slider by drawing labels over them
 		---> Volume slider gets an empty label over it
 		---> Song Position slider gets the label w/ the hh:mm:ss time on it
-	2) Search funcionality
+	2) Search?
 		---> A box that the user is able to type the string they want to search for,
 		and the scroll list will update itself to only show the relevant stuff.
 		Once the search box is cleared, put back the full list.
-	3) Tagging functionality???
+	3) Playlists?
 */
 
 /*
 	Destructor that deletes all the objects in this class.
 */
 ofApp::~ofApp() {
+	delete playButton_;
 	delete volSlider_;
 	delete songPositionSlider_;
 	delete songInfoLabel_;
@@ -153,6 +154,40 @@ void ofApp::setupGUI(int nVisible) {
 	}
 	endLabel_->setVisible(true);
 
+	//Play/Pause Button
+	playButton_ = new ofxDatGuiButton(SEND_TO_PLAY);
+	playButton_->setTheme(theme_);
+	playButton_->setWidth(BUTTON_LENGTH);
+	playButton_->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+	playButton_->setPosition(
+		ofGetWidth() / 2 - playButton_->getWidth() / 2,
+		ofGetHeight() - playButton_->getHeight()
+	);
+	playButton_->onButtonEvent(this, &ofApp::onPlayButtonEvent);
+	playButton_->setVisible(true);
+
+	//Left one button
+	leftButton_ = new ofxDatGuiButton(TO_LEFT);
+	leftButton_->setTheme(theme_);
+	leftButton_->setWidth(BUTTON_LENGTH);
+	leftButton_->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+	leftButton_->setPosition(
+		ofGetWidth() / 2 - BUTTON_LENGTH - playButton_->getWidth() / 2,
+		ofGetHeight() - leftButton_->getHeight()
+	);
+	leftButton_->onButtonEvent(this, &ofApp::onLeftButtonEvent);
+	leftButton_->setVisible(true);
+
+	//Right one button
+	rightButton_ = new ofxDatGuiButton(TO_RIGHT);
+	rightButton_->setTheme(theme_);
+	rightButton_->setWidth(BUTTON_LENGTH);
+	rightButton_->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+	rightButton_->setPosition(
+		ofGetWidth() / 2 + playButton_->getWidth() / 2,
+		ofGetHeight() - rightButton_->getHeight()
+	);
+	rightButton_->onButtonEvent(this, &ofApp::onRightButtonEvent);
 
 	//Create position slider
 	songPositionSlider_ = new ofxDatGuiSlider(SONG_POS_SLIDER_TITLE, 
@@ -162,14 +197,15 @@ void ofApp::setupGUI(int nVisible) {
 	songPositionSlider_->setWidth(ofGetWidth(), LABEL_LENGTH);
 	songPositionSlider_->setPosition(
 		0,
-		ofGetHeight() - songPositionSlider_->getHeight()
+		ofGetHeight() - 
+		playButton_ ->getHeight() -
+		songPositionSlider_->getHeight()
 	);
 	songPositionSlider_->onSliderEvent(this, &ofApp::onPosSliderEvent);
 	songPositionSlider_->setVisible(true);
 
 
 	//Create volume slider
-	//	- Also sets this init value to the volume of the player, to keep it consistent.
 	volSlider_ = new ofxDatGuiSlider(VOLUME_SLIDER_TITLE, 
 		SLIDER_MIN_VAL, SLIDER_MAX_VAL, INITIAL_VOLUME);
 	volSlider_->setPrecision(2);
@@ -178,22 +214,21 @@ void ofApp::setupGUI(int nVisible) {
 	volSlider_->setPosition(
 		0, 
 		ofGetHeight() - 
+		playButton_->getHeight() -
 		songPositionSlider_->getHeight() - 
 		volSlider_->getHeight()
 	);
 	volSlider_->onSliderEvent(this, &ofApp::onVolSliderEvent);
 	volSlider_->setVisible(true);
 
-	// Player volume init
-	player_->setVolume(volSlider_->getValue());
-
 	// Now Playing label
 	nowPlayingLabel_ = new ofxDatGuiLabel(NOW_PLAYING_INFO_TITLE);
 	nowPlayingLabel_->setPosition(
 		0,
 		ofGetHeight() -
-		volSlider_->getHeight() -
+		playButton_->getHeight() -
 		songPositionSlider_->getHeight() -
+		volSlider_->getHeight() -
 		nowPlayingLabel_->getHeight()
 	);
 	nowPlayingLabel_->setTheme(theme_);
@@ -209,6 +244,7 @@ void ofApp::setupGUI(int nVisible) {
 	totalHeight += endLabel_->getHeight();
 	if (scroller_) totalHeight += scroller_->getHeight();
 	totalHeight += nowPlayingLabel_->getHeight();
+	totalHeight += playButton_->getHeight();
 	std::cout << "Total Height: " << totalHeight << std::endl;
 
 	//Console output for all available fonts
@@ -221,6 +257,9 @@ void ofApp::setupGUI(int nVisible) {
 */
 void ofApp::update() {
 	//Explicit calls to update() to ensure they are updated correctly
+	playButton_->update();
+	leftButton_->update();
+	rightButton_->update();
 	volSlider_->update();
 	songPositionSlider_->update();
 	songInfoLabel_->update();
@@ -233,6 +272,7 @@ void ofApp::update() {
 	if (scroller_) scroller_->update();
 
 	//Player specific calls for updating components that rely on the state of the music player
+	player_->setVolume(volSlider_->getValue());
 	player_->updateCurrentSong(
 		NOW_PLAYING_INFO_TITLE, nowPlayingLabel_,
 		SONG_LENGTH_TITLE, songLengthLabel_,
@@ -240,6 +280,9 @@ void ofApp::update() {
 	);
 	player_->updateSongPosition(songPositionSlider_);
 	player_->updateSongPosFractionLabel(SONG_FRAC_TITLE, songPosFractionLabel_);
+	player_->updatePlayPauseButton(SEND_TO_PLAY, SEND_TO_PAUSE, playButton_);
+	player_->updateNowPlayingLabel(NOW_PLAYING_INFO_TITLE, nowPlayingLabel_);
+	player_->updateSongSizeLabel(SONG_SIZE_TITLE, songSizeLabel_);
 }
 
 /*
@@ -248,6 +291,9 @@ void ofApp::update() {
 */
 void ofApp::draw() {
 	//Explicit calls to draw() to ensure they are drawn correctly
+	playButton_->draw();
+	leftButton_->draw();
+	rightButton_->draw();
 	volSlider_->draw();
 	songPositionSlider_->draw();
 	songInfoLabel_->draw();
@@ -266,9 +312,9 @@ void ofApp::draw() {
 void ofApp::onScrollViewEvent(ofxDatGuiScrollViewEvent e) {
 	player_->playSong(e.target->getLabel());
 
-	player_->updateNowPlayingLabel(NOW_PLAYING_INFO_TITLE, nowPlayingLabel_);
+	//update to song length can't be called in update()... because
+	//of the trick it uses to get the length
 	player_->updateSongLengthLabel(SONG_LENGTH_TITLE, songLengthLabel_);
-	player_->updateSongSizeLabel(SONG_SIZE_TITLE, songSizeLabel_);
 }
 
 /*
@@ -288,11 +334,8 @@ void ofApp::onVolSliderEvent(ofxDatGuiSliderEvent e) {
 	README.md for more details.
 */
 void ofApp::onPosSliderEvent(ofxDatGuiSliderEvent e) {
-	//prevents a wierd crash if you place it in this if statement
-	if (player_->inPlaySession()) {
-		//e.scale is more accurate than value, since it uses the precision you specify 
-		player_->setPosition(e.scale);
-	}
+	//e.scale is more accurate than value, since it uses the precision you specify 
+	player_->setPosition(e.scale);
 }
 
 /*
@@ -300,8 +343,37 @@ void ofApp::onPosSliderEvent(ofxDatGuiSliderEvent e) {
 */
 void ofApp::keyPressed(int key) {
 	if (key == ' ') { //space bar
-		if (player_->inPlaySession()) {
-			player_->changePauseState();
-		}
+		player_->changePauseState();
 	}
 }
+
+/*
+	Event handler for pause/play button: changes it between pause and play state.
+*/
+void ofApp::onPlayButtonEvent(ofxDatGuiButtonEvent e) {
+	player_->changePauseState();
+}
+
+/*
+	Event handler for moving left one song.
+*/
+void ofApp::onLeftButtonEvent(ofxDatGuiButtonEvent e) {
+	player_->shiftLeftOneSong();
+
+	//update to song length can't be called in update()... because
+	//of the trick it uses to get the length
+	player_->updateSongLengthLabel(SONG_LENGTH_TITLE, songLengthLabel_);
+}
+
+/*
+	Event handler for moving right one song. Uses a trick, so 
+	doesn't need extra calls.
+*/
+void ofApp::onRightButtonEvent(ofxDatGuiButtonEvent e) {
+	player_->shiftRightOneSong();
+
+	//update to song length can't be called in update()... because
+	//of the trick it uses to get the length
+	player_->updateSongLengthLabel(SONG_LENGTH_TITLE, songLengthLabel_);
+}
+

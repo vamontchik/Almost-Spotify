@@ -102,24 +102,17 @@ void MusicPlayer::play() {
 	Changes whether the player is paused or unpaused.
 */
 void MusicPlayer::changePauseState() {
-	if (!isPaused_) {
-		std::cout << PAUSING_SONG << songQueue_->front().getFileName() << std::endl;
-		songPlayer_->setPaused(true);
-		isPaused_ = true;
-	}
-	else {
-		std::cout << UNPAUSING_SONG << songQueue_->front().getFileName() << std::endl;
-		songPlayer_->setPaused(false);
-		isPaused_ = false;
-	}
-}
-
-/*
-	Skips to the next song in the queue.
-*/
-void MusicPlayer::skipToNext() {
-	if (songPlayer_->getIsPlaying()) {
-		songPlayer_->stop(); //the next update call will start the next song
+	if (inPlay_) {
+		if (!isPaused_) {
+			std::cout << PAUSING_SONG << songQueue_->front().getFileName() << std::endl;
+			songPlayer_->setPaused(true);
+			isPaused_ = true;
+		}
+		else {
+			std::cout << UNPAUSING_SONG << songQueue_->front().getFileName() << std::endl;
+			songPlayer_->setPaused(false);
+			isPaused_ = false;
+		}
 	}
 }
 
@@ -151,24 +144,8 @@ void MusicPlayer::updateCurrentSong(
 
 			//play the song at the front!
 			playSongAtFront();
-
-			//update the GUI elements for song info and "now playing"
-			updateNowPlayingLabel(nowPlayingPrefix, nowPlayingPtr);
-			updateSongLengthLabel(songLengthPrefix, songLengthPtr);
-			updateSongSizeLabel(songSizePrefix, songSizePtr);
 		}
 	}
-}
-
-/*
-	Returns whether or not this player is in a play session.
-
-	Note: This variable is mostly used to guard againts wierd update
-	issues, such as when the internal state is changing and we don't
-	want our update method to do anything.
-*/
-bool MusicPlayer::inPlaySession() {
-	return inPlay_;
 }
 
 /*
@@ -216,7 +193,9 @@ void MusicPlayer::playSong(std::string baseName) {
 	Note: Values range from 0.0 to 1.0, where 0.0 is muted, and 1.0 is the max volume.
 */
 void MusicPlayer::setVolume(double value) {
-	songPlayer_->setVolume(value);
+	if (inPlay_) {
+		songPlayer_->setVolume(value);
+	}
 }
 
 /*
@@ -227,15 +206,17 @@ void MusicPlayer::setVolume(double value) {
 	to the end by value means typing in 0.9999, not 1.0
 */
 void MusicPlayer::setPosition(double value) {
-	songPlayer_->setPosition(value);
+	if (inPlay_) {
+		songPlayer_->setPosition(value);
+	}
 }
 
 /*
-	Updates the value in song position slider's text field, if not paused.
+	Updates the value in song position slider's text field.
 	This is called on each call to update() in the GUI.
 */
 void MusicPlayer::updateSongPosition(ofxDatGuiSlider* sliderPtr) {
-	if (!isPaused_) {
+	if (inPlay_) {
 		sliderPtr->setValue(songPlayer_->getPosition());
 	}
 }
@@ -357,6 +338,10 @@ void MusicPlayer::updateSongSizeLabel(std::string prefix, ofxDatGuiLabel* labelP
 	}
 }
 
+/*
+	Updates the hh:mm:ss time display for the song.
+	Called on each update().
+*/
 void MusicPlayer::updateSongPosFractionLabel(std::string prefix, ofxDatGuiLabel* labelPtr) {
 	if (inPlay_) {
 		double current = songPlayer_->getPositionMS() / 1000.0;
@@ -409,5 +394,42 @@ void MusicPlayer::updateSongPosFractionLabel(std::string prefix, ofxDatGuiLabel*
 				secStr
 			);
 		}
+	}
+}
+
+/*
+	Changes the string on the button depending on what state it's in.
+	Called on each update().
+*/
+void MusicPlayer::updatePlayPauseButton(
+	std::string toPlay, std::string toPause, ofxDatGuiButton* buttonPtr) 
+{
+	if (inPlay_) {
+		if (isPaused_) {
+			buttonPtr->setLabel(toPlay);
+		}
+		else {
+			buttonPtr->setLabel(toPause);
+		}
+
+	}
+}
+
+/*
+	Skips through the entire queue, basically.
+*/
+void MusicPlayer::shiftLeftOneSong() {
+	if (inPlay_) {
+		playSong(songQueue_->back().getBaseName());
+	}
+}
+
+/*
+	Skips to the next song.
+*/
+void MusicPlayer::shiftRightOneSong() {
+	if (inPlay_) {
+		unloadSong(true);
+		playSong(songQueue_->front().getBaseName());
 	}
 }

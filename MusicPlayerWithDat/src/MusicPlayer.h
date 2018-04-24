@@ -47,13 +47,11 @@ public:
 
 	void unloadSong(bool);
 	void changePauseState();
-	void skipToNext();
 	void updateCurrentSong(
 		std::string, ofxDatGuiLabel*,
 		std::string, ofxDatGuiLabel*,
 		std::string, ofxDatGuiLabel*
 	);
-	bool inPlaySession();
 	std::queue<ofFile> getSongQueue();
 	bool isPaused();
 	void playSong(std::string);
@@ -64,4 +62,7 @@ public:
 	void updateSongLengthLabel(std::string, ofxDatGuiLabel*);
 	void updateSongSizeLabel(std::string, ofxDatGuiLabel*);
 	void updateSongPosFractionLabel(std::string, ofxDatGuiLabel*);
+	void updatePlayPauseButton(std::string, std::string, ofxDatGuiButton*);
+	void shiftLeftOneSong();
+	void shiftRightOneSong();
 };
