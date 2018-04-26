@@ -20,3 +20,15 @@ them with a modified copy because some of these said GUI elements do not have
 a clear() method to remove their contents. Similar issues crop up all the time,
 and very "hacky" solution have to be made in order to allow things to appear
 to work in a nice manner.
+
+# April 26th, 2018
+
+Internally, the code has been run/tested thoroughly and has undergone fine
+tuning. Most of the changes of the last week have been made to revamp
+how the internals of the system work.
+
+The GUI now also presents a few additional elements, such as the
+right and left buttons to go between songs. Also, each song now
+displays some key statistics about it, such as its length, where it
+is in the song in a readable hh:mm:ss or mm:ss format, and its size
+with the correct prefix attached to the word "byte".

@@ -13,7 +13,8 @@ will prevent the project from building and running.
 
 Usage is intuitive: The GUI presents play/pause buttons for playing and pausing
 the song, buttons to select which song you want to play, some sliders to adjust
-volume and where in the song you want to be at.
+volume and where in the song you want to be at. You can go back and forth between
+songs by pressing the right/left buttons.
 
 Keyboard shortcuts:
 - Pressing the spacebar will pause/unpause the song.
