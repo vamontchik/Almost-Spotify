@@ -2,14 +2,10 @@
 
 /*
 TODO:
-	[???] 1) Get rid of the text field's for each slider by drawing labels over them
-		---> Volume slider gets an empty label over it
-		---> Song Position slider gets the label w/ the hh:mm:ss time on it
-	2) Search?
+	1) Search?
 		---> A box that the user is able to type the string they want to search for,
 		and the scroll list will update itself to only show the relevant stuff.
 		Once the search box is cleared, put back the full list.
-	3) Playlists?
 */
 
 /*
@@ -17,6 +13,8 @@ TODO:
 */
 ofApp::~ofApp() {
 	delete playButton_;
+	delete leftButton_;
+	delete rightButton_;
 	delete volSlider_;
 	delete songPositionSlider_;
 	delete songInfoLabel_;
@@ -220,6 +218,7 @@ void ofApp::setupGUI(int nVisible) {
 	);
 	volSlider_->onSliderEvent(this, &ofApp::onVolSliderEvent);
 	volSlider_->setVisible(true);
+	player_->setVolume(INITIAL_VOLUME);
 
 	// Now Playing label
 	nowPlayingLabel_ = new ofxDatGuiLabel(NOW_PLAYING_INFO_TITLE);
@@ -271,18 +270,15 @@ void ofApp::update() {
 	endLabel_->update();
 	if (scroller_) scroller_->update();
 
-	//Player specific calls for updating components that rely on the state of the music player
-	player_->setVolume(volSlider_->getValue());
-	player_->updateCurrentSong(
-		NOW_PLAYING_INFO_TITLE, nowPlayingLabel_,
-		SONG_LENGTH_TITLE, songLengthLabel_,
-		SONG_SIZE_TITLE, songSizeLabel_
-	);
+	//Player specific calls for updating components on each call to update()
+	bool updated = player_->updateCurrentSong();
+	if (updated) {
+		player_->updateSongLengthLabel(SONG_LENGTH_TITLE, songLengthLabel_);
+		player_->updateNowPlayingLabel(NOW_PLAYING_INFO_TITLE, nowPlayingLabel_);
+		player_->updateSongSizeLabel(SONG_SIZE_TITLE, songSizeLabel_);
+	}
 	player_->updateSongPosition(songPositionSlider_);
 	player_->updateSongPosFractionLabel(SONG_FRAC_TITLE, songPosFractionLabel_);
-	player_->updatePlayPauseButton(SEND_TO_PLAY, SEND_TO_PAUSE, playButton_);
-	player_->updateNowPlayingLabel(NOW_PLAYING_INFO_TITLE, nowPlayingLabel_);
-	player_->updateSongSizeLabel(SONG_SIZE_TITLE, songSizeLabel_);
 }
 
 /*
@@ -315,6 +311,8 @@ void ofApp::onScrollViewEvent(ofxDatGuiScrollViewEvent e) {
 	//update to song length can't be called in update()... because
 	//of the trick it uses to get the length
 	player_->updateSongLengthLabel(SONG_LENGTH_TITLE, songLengthLabel_);
+	player_->updateNowPlayingLabel(NOW_PLAYING_INFO_TITLE, nowPlayingLabel_);
+	player_->updateSongSizeLabel(SONG_SIZE_TITLE, songSizeLabel_);
 }
 
 /*
@@ -344,6 +342,7 @@ void ofApp::onPosSliderEvent(ofxDatGuiSliderEvent e) {
 void ofApp::keyPressed(int key) {
 	if (key == ' ') { //space bar
 		player_->changePauseState();
+		player_->updatePlayPauseButton(SEND_TO_PLAY, SEND_TO_PAUSE, playButton_);
 	}
 }
 
@@ -352,6 +351,7 @@ void ofApp::keyPressed(int key) {
 */
 void ofApp::onPlayButtonEvent(ofxDatGuiButtonEvent e) {
 	player_->changePauseState();
+	player_->updatePlayPauseButton(SEND_TO_PLAY, SEND_TO_PAUSE, playButton_);
 }
 
 /*
@@ -363,6 +363,8 @@ void ofApp::onLeftButtonEvent(ofxDatGuiButtonEvent e) {
 	//update to song length can't be called in update()... because
 	//of the trick it uses to get the length
 	player_->updateSongLengthLabel(SONG_LENGTH_TITLE, songLengthLabel_);
+	player_->updateNowPlayingLabel(NOW_PLAYING_INFO_TITLE, nowPlayingLabel_);
+	player_->updateSongSizeLabel(SONG_SIZE_TITLE, songSizeLabel_);
 }
 
 /*
@@ -375,5 +377,7 @@ void ofApp::onRightButtonEvent(ofxDatGuiButtonEvent e) {
 	//update to song length can't be called in update()... because
 	//of the trick it uses to get the length
 	player_->updateSongLengthLabel(SONG_LENGTH_TITLE, songLengthLabel_);
+	player_->updateNowPlayingLabel(NOW_PLAYING_INFO_TITLE, nowPlayingLabel_);
+	player_->updateSongSizeLabel(SONG_SIZE_TITLE, songSizeLabel_);
 }
 

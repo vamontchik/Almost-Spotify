@@ -47,11 +47,7 @@ public:
 
 	void unloadSong(bool);
 	void changePauseState();
-	void updateCurrentSong(
-		std::string, ofxDatGuiLabel*,
-		std::string, ofxDatGuiLabel*,
-		std::string, ofxDatGuiLabel*
-	);
+	bool updateCurrentSong();
 	std::queue<ofFile> getSongQueue();
 	bool isPaused();
 	void playSong(std::string);

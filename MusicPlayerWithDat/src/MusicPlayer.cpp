@@ -127,10 +127,7 @@ void MusicPlayer::playSongAtFront() {
 /*
 	Called by update() to transition to the next song in the queue, if possible.
 */
-void MusicPlayer::updateCurrentSong(
-	std::string nowPlayingPrefix, ofxDatGuiLabel* nowPlayingPtr,
-	std::string songLengthPrefix, ofxDatGuiLabel* songLengthPtr,
-	std::string songSizePrefix, ofxDatGuiLabel* songSizePtr) 
+bool MusicPlayer::updateCurrentSong() 
 {
 	if (inPlay_) {
 		//check if either:
@@ -144,8 +141,12 @@ void MusicPlayer::updateCurrentSong(
 
 			//play the song at the front!
 			playSongAtFront();
+
+			return true;
 		}
 	}
+
+	return false;
 }
 
 /*
@@ -193,9 +194,7 @@ void MusicPlayer::playSong(std::string baseName) {
 	Note: Values range from 0.0 to 1.0, where 0.0 is muted, and 1.0 is the max volume.
 */
 void MusicPlayer::setVolume(double value) {
-	if (inPlay_) {
-		songPlayer_->setVolume(value);
-	}
+	songPlayer_->setVolume(value);
 }
 
 /*
@@ -216,7 +215,7 @@ void MusicPlayer::setPosition(double value) {
 	This is called on each call to update() in the GUI.
 */
 void MusicPlayer::updateSongPosition(ofxDatGuiSlider* sliderPtr) {
-	if (inPlay_) {
+	if (inPlay_ && !isPaused_) {
 		sliderPtr->setValue(songPlayer_->getPosition());
 	}
 }
