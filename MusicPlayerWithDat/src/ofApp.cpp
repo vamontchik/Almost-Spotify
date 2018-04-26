@@ -308,12 +308,17 @@ void ofApp::draw() {
 void ofApp::onScrollViewEvent(ofxDatGuiScrollViewEvent e) {
 	player_->playSong(e.target->getLabel());
 
-	//this line is here to fix a few wierd GUI stuff :(
+	//This is to modifiy the GUI elements on each click so they correspond
+	//to the correct element... relying on update() doesn't 
+	//seem to work
 	player_->updatePlayPauseButton(SEND_TO_PLAY, SEND_TO_PAUSE, playButton_);
+	player_->setPosition(0);
 
 	//update to song length can't be called in update()... because
 	//of the trick it uses to get the length
 	player_->updateSongLengthLabel(SONG_LENGTH_TITLE, songLengthLabel_);
+
+	//calls to update other GUI elements on event
 	player_->updateNowPlayingLabel(NOW_PLAYING_INFO_TITLE, nowPlayingLabel_);
 	player_->updateSongSizeLabel(SONG_SIZE_TITLE, songSizeLabel_);
 }
@@ -366,6 +371,8 @@ void ofApp::onLeftButtonEvent(ofxDatGuiButtonEvent e) {
 	//update to song length can't be called in update()... because
 	//of the trick it uses to get the length
 	player_->updateSongLengthLabel(SONG_LENGTH_TITLE, songLengthLabel_);
+
+	//calls to update other GUI elements on event
 	player_->updateNowPlayingLabel(NOW_PLAYING_INFO_TITLE, nowPlayingLabel_);
 	player_->updateSongSizeLabel(SONG_SIZE_TITLE, songSizeLabel_);
 }
@@ -380,6 +387,8 @@ void ofApp::onRightButtonEvent(ofxDatGuiButtonEvent e) {
 	//update to song length can't be called in update()... because
 	//of the trick it uses to get the length
 	player_->updateSongLengthLabel(SONG_LENGTH_TITLE, songLengthLabel_);
+
+	//calls to update other GUI elements on event
 	player_->updateNowPlayingLabel(NOW_PLAYING_INFO_TITLE, nowPlayingLabel_);
 	player_->updateSongSizeLabel(SONG_SIZE_TITLE, songSizeLabel_);
 }

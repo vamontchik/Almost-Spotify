@@ -2,7 +2,7 @@
 
 MusicPlayer::MusicPlayer()
 	: songFolder_(nullptr), songPlayer_(nullptr), songQueue_(nullptr),
-	inPlay_(false), isPaused_(true)
+	inPlay_(false), isPaused_(false)
 {
 	initFolderProcess();
 	songPlayer_ = new ofSoundPlayer();
@@ -181,7 +181,6 @@ void MusicPlayer::playSong(std::string baseName) {
 			loadSongIntoPlayer(songQueue_->front());
 			playSongAtFront();
 			inPlay_ = true;
-			isPaused_ = false;
 		}
 		else {
 			unloadSong(true);
@@ -216,7 +215,7 @@ void MusicPlayer::setPosition(double value) {
 	This is called on each call to update() in the GUI.
 */
 void MusicPlayer::updateSongPosition(ofxDatGuiSlider* sliderPtr) {
-	if (inPlay_ && !isPaused_) {
+	if (inPlay_) {
 		sliderPtr->setValue(songPlayer_->getPosition());
 	}
 }
