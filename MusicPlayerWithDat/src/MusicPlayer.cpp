@@ -2,7 +2,7 @@
 
 MusicPlayer::MusicPlayer()
 	: songFolder_(nullptr), songPlayer_(nullptr), songQueue_(nullptr),
-	inPlay_(false), isPaused_(false)
+	inPlay_(false), isPaused_(true)
 {
 	initFolderProcess();
 	songPlayer_ = new ofSoundPlayer();
@@ -181,6 +181,7 @@ void MusicPlayer::playSong(std::string baseName) {
 			loadSongIntoPlayer(songQueue_->front());
 			playSongAtFront();
 			inPlay_ = true;
+			isPaused_ = false;
 		}
 		else {
 			unloadSong(true);

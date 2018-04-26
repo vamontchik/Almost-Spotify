@@ -308,6 +308,9 @@ void ofApp::draw() {
 void ofApp::onScrollViewEvent(ofxDatGuiScrollViewEvent e) {
 	player_->playSong(e.target->getLabel());
 
+	//this line is here to fix a few wierd GUI stuff :(
+	player_->updatePlayPauseButton(SEND_TO_PLAY, SEND_TO_PAUSE, playButton_);
+
 	//update to song length can't be called in update()... because
 	//of the trick it uses to get the length
 	player_->updateSongLengthLabel(SONG_LENGTH_TITLE, songLengthLabel_);
