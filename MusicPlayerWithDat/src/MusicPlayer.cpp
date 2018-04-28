@@ -398,7 +398,6 @@ void MusicPlayer::updateSongPosFractionLabel(std::string prefix, ofxDatGuiLabel*
 
 /*
 	Changes the string on the button depending on what state it's in.
-	Called on each update().
 */
 void MusicPlayer::updatePlayPauseButton(
 	std::string toPlay, std::string toPause, ofxDatGuiButton* buttonPtr) 

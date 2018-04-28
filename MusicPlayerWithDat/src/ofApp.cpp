@@ -75,10 +75,8 @@ void ofApp::setupGUI(int nVisible) {
 		scroller_->setTheme(theme_);
 		scroller_->setWidth(ofGetWidth() / 2);
 		std::queue<ofFile> queue = player_->getSongQueue();
-		int count = 0;
 		while (queue.size() > 0) {
 			scroller_->add(queue.front().getBaseName());
-			count++;
 			queue.pop();
 		}
 		
