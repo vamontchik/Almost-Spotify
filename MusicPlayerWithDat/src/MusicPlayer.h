@@ -61,4 +61,5 @@ public:
 	void updatePlayPauseButton(std::string, std::string, ofxDatGuiButton*);
 	void shiftLeftOneSong();
 	void shiftRightOneSong();
+	void shuffleRightRandomAmount();
 };

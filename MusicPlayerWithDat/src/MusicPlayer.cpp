@@ -431,3 +431,13 @@ void MusicPlayer::shiftRightOneSong() {
 		playSong(songQueue_->front().getBaseName());
 	}
 }
+
+/*
+	Acts like a psuedo-shuffle mode: Randomly seeks to a song right.
+*/
+void MusicPlayer::shuffleRightRandomAmount() {
+	int randRight = (rand() % songQueue_->size()) + 1;
+	for (int i = 0; i < randRight; i++) {
+		shiftRightOneSong();
+	}
+}

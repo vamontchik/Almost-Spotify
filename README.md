@@ -57,6 +57,4 @@ Also, due to the nature of how the song position slider's value is being constan
 updated, it is possible to crash the program! If one is to type in a value into
 the song position slider's text field, not only will the values you type in not be visible
 and a simple moving cursor will be the only indicator of you even doing anything,
-but you can also **crash the program if you type in too many values**. If you really need to type
-in a value for the position slider, pause the song, then type it in, and then
-unpause the song to hear it at that location.
+but you will also **crash the program if you type in too many values**.

@@ -2,6 +2,7 @@
 
 /*
 TODO:
+	0.5) Shuffle button.
 	1) Search?
 		---> A box that the user is able to type the string they want to search for,
 		and the scroll list will update itself to only show the relevant stuff.
@@ -62,7 +63,6 @@ void ofApp::setupGUI(int nVisible) {
 	playlistLabel_->setTheme(theme_);
 	playlistLabel_->setWidth(ofGetWidth() / 2);
 	playlistLabel_->setLabelAlignment(ofxDatGuiAlignment::CENTER);
-	playlistLabel_->setVisible(true);
 	
 	/*
 	Scroll view for songs / buttons, Event listener for scroll view, and Info Labels
@@ -81,7 +81,6 @@ void ofApp::setupGUI(int nVisible) {
 		}
 		
 		scroller_->onScrollViewEvent(this, &ofApp::onScrollViewEvent);
-		scroller_->setVisible(true);
 	}
 
 	/*
@@ -95,7 +94,6 @@ void ofApp::setupGUI(int nVisible) {
 	songInfoLabel_->setTheme(theme_);
 	songInfoLabel_->setWidth(ofGetWidth() / 2);
 	songInfoLabel_->setLabelAlignment(ofxDatGuiAlignment::CENTER);
-	songInfoLabel_->setVisible(true);
 
 	songLengthLabel_ = new ofxDatGuiLabel(SONG_LENGTH_TITLE);
 	songLengthLabel_->setPosition(
@@ -105,7 +103,6 @@ void ofApp::setupGUI(int nVisible) {
 	songLengthLabel_->setTheme(theme_);
 	songLengthLabel_->setWidth(ofGetWidth() / 2);
 	songLengthLabel_->setLabelAlignment(ofxDatGuiAlignment::LEFT);
-	songLengthLabel_->setVisible(true);
 
 	songSizeLabel_ = new ofxDatGuiLabel(SONG_SIZE_TITLE);
 	songSizeLabel_->setPosition(
@@ -116,7 +113,6 @@ void ofApp::setupGUI(int nVisible) {
 	songSizeLabel_->setTheme(theme_);
 	songSizeLabel_->setWidth(ofGetWidth() / 2);
 	songSizeLabel_->setLabelAlignment(ofxDatGuiAlignment::LEFT);
-	songSizeLabel_->setVisible(true);
 
 	songPosFractionLabel_ = new ofxDatGuiLabel(SONG_FRAC_TITLE);
 	songPosFractionLabel_->setPosition(
@@ -128,7 +124,6 @@ void ofApp::setupGUI(int nVisible) {
 	songPosFractionLabel_->setTheme(theme_);
 	songPosFractionLabel_->setWidth(ofGetWidth() / 2);
 	songPosFractionLabel_->setLabelAlignment(ofxDatGuiAlignment::LEFT);
-	songPosFractionLabel_->setVisible(true);
 
 	//Label that signifies the end of the playlist
 	endLabel_ = new ofxDatGuiLabel(END_TITLE);
@@ -148,7 +143,6 @@ void ofApp::setupGUI(int nVisible) {
 			playlistLabel_->getHeight()
 		);
 	}
-	endLabel_->setVisible(true);
 
 	//Play/Pause Button
 	playButton_ = new ofxDatGuiButton(SEND_TO_PLAY);
@@ -156,11 +150,21 @@ void ofApp::setupGUI(int nVisible) {
 	playButton_->setWidth(BUTTON_LENGTH);
 	playButton_->setLabelAlignment(ofxDatGuiAlignment::CENTER);
 	playButton_->setPosition(
-		ofGetWidth() / 2 - playButton_->getWidth() / 2,
+		ofGetWidth() / 2,
 		ofGetHeight() - playButton_->getHeight()
 	);
 	playButton_->onButtonEvent(this, &ofApp::onPlayButtonEvent);
-	playButton_->setVisible(true);
+
+	//Shuffle/Random Button
+	shuffleButton_ = new ofxDatGuiButton(RANDOM);
+	shuffleButton_->setTheme(theme_);
+	shuffleButton_->setWidth(BUTTON_LENGTH);
+	shuffleButton_->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+	shuffleButton_->setPosition(
+		ofGetWidth() / 2 - BUTTON_LENGTH,
+		ofGetHeight() - shuffleButton_->getHeight()
+	);
+	shuffleButton_->onButtonEvent(this, &ofApp::onShuffleEvent);
 
 	//Left one button
 	leftButton_ = new ofxDatGuiButton(TO_LEFT);
@@ -168,11 +172,10 @@ void ofApp::setupGUI(int nVisible) {
 	leftButton_->setWidth(BUTTON_LENGTH);
 	leftButton_->setLabelAlignment(ofxDatGuiAlignment::CENTER);
 	leftButton_->setPosition(
-		ofGetWidth() / 2 - BUTTON_LENGTH - playButton_->getWidth() / 2,
+		ofGetWidth() / 2 - 2 * BUTTON_LENGTH,
 		ofGetHeight() - leftButton_->getHeight()
 	);
 	leftButton_->onButtonEvent(this, &ofApp::onLeftButtonEvent);
-	leftButton_->setVisible(true);
 
 	//Right one button
 	rightButton_ = new ofxDatGuiButton(TO_RIGHT);
@@ -180,7 +183,7 @@ void ofApp::setupGUI(int nVisible) {
 	rightButton_->setWidth(BUTTON_LENGTH);
 	rightButton_->setLabelAlignment(ofxDatGuiAlignment::CENTER);
 	rightButton_->setPosition(
-		ofGetWidth() / 2 + playButton_->getWidth() / 2,
+		ofGetWidth() / 2 + BUTTON_LENGTH,
 		ofGetHeight() - rightButton_->getHeight()
 	);
 	rightButton_->onButtonEvent(this, &ofApp::onRightButtonEvent);
@@ -198,8 +201,6 @@ void ofApp::setupGUI(int nVisible) {
 		songPositionSlider_->getHeight()
 	);
 	songPositionSlider_->onSliderEvent(this, &ofApp::onPosSliderEvent);
-	songPositionSlider_->setVisible(true);
-
 
 	//Create volume slider
 	volSlider_ = new ofxDatGuiSlider(VOLUME_SLIDER_TITLE, 
@@ -215,8 +216,7 @@ void ofApp::setupGUI(int nVisible) {
 		volSlider_->getHeight()
 	);
 	volSlider_->onSliderEvent(this, &ofApp::onVolSliderEvent);
-	volSlider_->setVisible(true);
-	player_->setVolume(INITIAL_VOLUME);
+	player_->setVolume(INITIAL_VOLUME); //initial vol of the player
 
 	// Now Playing label
 	nowPlayingLabel_ = new ofxDatGuiLabel(NOW_PLAYING_INFO_TITLE);
@@ -231,7 +231,6 @@ void ofApp::setupGUI(int nVisible) {
 	nowPlayingLabel_->setTheme(theme_);
 	nowPlayingLabel_->setWidth(ofGetWidth());
 	nowPlayingLabel_->setLabelAlignment(ofxDatGuiAlignment::CENTER);
-	nowPlayingLabel_->setVisible(true);
 
 	//total height --> for testing
 	int totalHeight = 0;
@@ -257,6 +256,7 @@ void ofApp::update() {
 	playButton_->update();
 	leftButton_->update();
 	rightButton_->update();
+	shuffleButton_->update();
 	volSlider_->update();
 	songPositionSlider_->update();
 	songInfoLabel_->update();
@@ -288,6 +288,7 @@ void ofApp::draw() {
 	playButton_->draw();
 	leftButton_->draw();
 	rightButton_->draw();
+	shuffleButton_->draw();
 	volSlider_->draw();
 	songPositionSlider_->draw();
 	songInfoLabel_->draw();
@@ -310,7 +311,6 @@ void ofApp::onScrollViewEvent(ofxDatGuiScrollViewEvent e) {
 	//to the correct element... relying on update() doesn't 
 	//seem to work
 	player_->updatePlayPauseButton(SEND_TO_PLAY, SEND_TO_PAUSE, playButton_);
-	player_->setPosition(0);
 
 	//update to song length can't be called in update()... because
 	//of the trick it uses to get the length
@@ -381,6 +381,18 @@ void ofApp::onLeftButtonEvent(ofxDatGuiButtonEvent e) {
 */
 void ofApp::onRightButtonEvent(ofxDatGuiButtonEvent e) {
 	player_->shiftRightOneSong();
+
+	//update to song length can't be called in update()... because
+	//of the trick it uses to get the length
+	player_->updateSongLengthLabel(SONG_LENGTH_TITLE, songLengthLabel_);
+
+	//calls to update other GUI elements on event
+	player_->updateNowPlayingLabel(NOW_PLAYING_INFO_TITLE, nowPlayingLabel_);
+	player_->updateSongSizeLabel(SONG_SIZE_TITLE, songSizeLabel_);
+}
+
+void ofApp::onShuffleEvent(ofxDatGuiButtonEvent e) {
+	player_->shuffleRightRandomAmount();
 
 	//update to song length can't be called in update()... because
 	//of the trick it uses to get the length
