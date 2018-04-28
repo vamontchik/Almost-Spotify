@@ -2,7 +2,7 @@
 
 MusicPlayer::MusicPlayer()
 	: songFolder_(nullptr), songPlayer_(nullptr), songQueue_(nullptr),
-	inPlay_(false), isPaused_(false)
+	inPlay_(false), isPaused_(false), shuffleMode_(false), song_length(0.0)
 {
 	initFolderProcess();
 	songPlayer_ = new ofSoundPlayer();
@@ -134,13 +134,14 @@ bool MusicPlayer::updateCurrentSong()
 		//	(1) a song has been stopped with the stop() method
 		//	(2) a song has reached its end using (getPosition() == 1.0)
 		if (!songPlayer_->getIsPlaying() || songPlayer_->getPosition() == 1.0) {
-			//it's ok to use front() because the front has been pushed to back!
-			unloadSong(true);
-
-			loadSongIntoPlayer(songQueue_->front());
-
-			//play the song at the front!
-			playSongAtFront();
+			if (shuffleMode_) {
+				shuffleRightRandomAmount();
+			}
+			else {
+				unloadSong(true);
+				loadSongIntoPlayer(songQueue_->front());
+				playSongAtFront();
+			}
 
 			return true;
 		}
@@ -436,8 +437,17 @@ void MusicPlayer::shiftRightOneSong() {
 	Acts like a psuedo-shuffle mode: Randomly seeks to a song right.
 */
 void MusicPlayer::shuffleRightRandomAmount() {
-	int randRight = (rand() % songQueue_->size()) + 1;
-	for (int i = 0; i < randRight; i++) {
-		shiftRightOneSong();
+	if (inPlay_) {
+		// 5 -> songQueue.size() + 5, exclusive
+		int randRight = (rand() % songQueue_->size()) + 5; 
+		std::cout << "Shifting over " + std::to_string(randRight) + " times!" << std::endl;
+		
+		for (int i = 0; i < randRight; i++) {
+			shiftRightOneSong();
+		}
 	}
+}
+
+void MusicPlayer::setShuffleMode(bool setTo) {
+	shuffleMode_ = setTo;
 }

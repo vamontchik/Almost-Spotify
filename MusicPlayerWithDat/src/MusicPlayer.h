@@ -11,6 +11,7 @@ private:
 	std::queue<ofFile>* songQueue_;
 	bool inPlay_;
 	bool isPaused_;
+	bool shuffleMode_;
 	double song_length;
 
 	const std::string SONG_FOLDER_NAME = "songs";
@@ -62,4 +63,5 @@ public:
 	void shiftLeftOneSong();
 	void shiftRightOneSong();
 	void shuffleRightRandomAmount();
+	void setShuffleMode(bool);
 };

@@ -1,8 +1,7 @@
 #include "ofApp.h"
 
 /*
-TODO:
-	0.5) Shuffle button.
+TODO: 
 	1) Search?
 		---> A box that the user is able to type the string they want to search for,
 		and the scroll list will update itself to only show the relevant stuff.
@@ -155,16 +154,16 @@ void ofApp::setupGUI(int nVisible) {
 	);
 	playButton_->onButtonEvent(this, &ofApp::onPlayButtonEvent);
 
-	//Shuffle/Random Button
-	shuffleButton_ = new ofxDatGuiButton(RANDOM);
-	shuffleButton_->setTheme(theme_);
-	shuffleButton_->setWidth(BUTTON_LENGTH);
-	shuffleButton_->setLabelAlignment(ofxDatGuiAlignment::CENTER);
-	shuffleButton_->setPosition(
+	//Shuffle toggle
+	shuffleToggle_ = new ofxDatGuiToggle(SHUFFLE_MODE);
+	shuffleToggle_->setTheme(theme_);
+	shuffleToggle_->setWidth(BUTTON_LENGTH);
+	shuffleToggle_->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+	shuffleToggle_->setPosition(
 		ofGetWidth() / 2 - BUTTON_LENGTH,
-		ofGetHeight() - shuffleButton_->getHeight()
+		ofGetHeight() - shuffleToggle_->getHeight()
 	);
-	shuffleButton_->onButtonEvent(this, &ofApp::onShuffleEvent);
+	shuffleToggle_->onButtonEvent(this, &ofApp::onShuffleToggleEvent);
 
 	//Left one button
 	leftButton_ = new ofxDatGuiButton(TO_LEFT);
@@ -256,7 +255,7 @@ void ofApp::update() {
 	playButton_->update();
 	leftButton_->update();
 	rightButton_->update();
-	shuffleButton_->update();
+	shuffleToggle_->update();
 	volSlider_->update();
 	songPositionSlider_->update();
 	songInfoLabel_->update();
@@ -288,7 +287,7 @@ void ofApp::draw() {
 	playButton_->draw();
 	leftButton_->draw();
 	rightButton_->draw();
-	shuffleButton_->draw();
+	shuffleToggle_->draw();
 	volSlider_->draw();
 	songPositionSlider_->draw();
 	songInfoLabel_->draw();
@@ -391,15 +390,18 @@ void ofApp::onRightButtonEvent(ofxDatGuiButtonEvent e) {
 	player_->updateSongSizeLabel(SONG_SIZE_TITLE, songSizeLabel_);
 }
 
-void ofApp::onShuffleEvent(ofxDatGuiButtonEvent e) {
-	player_->shuffleRightRandomAmount();
-
-	//update to song length can't be called in update()... because
-	//of the trick it uses to get the length
-	player_->updateSongLengthLabel(SONG_LENGTH_TITLE, songLengthLabel_);
-
-	//calls to update other GUI elements on event
-	player_->updateNowPlayingLabel(NOW_PLAYING_INFO_TITLE, nowPlayingLabel_);
-	player_->updateSongSizeLabel(SONG_SIZE_TITLE, songSizeLabel_);
+/*
+	Looks like presses automatically change the GUI toggle. Ok.
+	Change internal state as necessary.
+*/
+void ofApp::onShuffleToggleEvent(ofxDatGuiButtonEvent e) {
+	if (!shuffleToggle_->getChecked()) {
+		std::cout << "Changed Toggle To Unchecked!" << std::endl;
+		player_->setShuffleMode(false);
+	}
+	else {
+		std::cout << "Changed Toggle To Checked!" << std::endl;
+		player_->setShuffleMode(true);
+	}
 }
 

@@ -11,7 +11,7 @@ private:
 	ofxDatGuiButton* playButton_;
 	ofxDatGuiButton* leftButton_;
 	ofxDatGuiButton* rightButton_;
-	ofxDatGuiButton* shuffleButton_;
+	ofxDatGuiToggle* shuffleToggle_;
 	ofxDatGuiSlider* volSlider_;
 	ofxDatGuiSlider* songPositionSlider_;
 	ofxDatGuiLabel* songInfoLabel_;
@@ -36,7 +36,7 @@ private:
 	const std::string SEND_TO_PAUSE = " || ";
 	const std::string TO_LEFT = " < ";
 	const std::string TO_RIGHT = " > ";
-	const std::string RANDOM = " RAND ";
+	const std::string SHUFFLE_MODE = " SHUFFLE ";
 	const std::string PLAYLIST_TITLE = "---- PLAYLIST ----";
 	const std::string SONG_INFO_TITLE = "Song Info";
 	const std::string SONG_SIZE_TITLE = "Size: ";
@@ -59,6 +59,6 @@ private:
 	void onPlayButtonEvent(ofxDatGuiButtonEvent);
 	void onLeftButtonEvent(ofxDatGuiButtonEvent);
 	void onRightButtonEvent(ofxDatGuiButtonEvent);
-	void onShuffleEvent(ofxDatGuiButtonEvent);
+	void onShuffleToggleEvent(ofxDatGuiButtonEvent);
 	void setupGUI(int);
 };
