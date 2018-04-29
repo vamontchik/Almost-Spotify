@@ -51,9 +51,11 @@ public:
 	bool updateCurrentSong();
 	std::queue<ofFile> getSongQueue();
 	bool isPaused();
+	bool isShuffleMode();
 	void playSong(std::string);
 	void setVolume(double);
 	void setPosition(double);
+	void setShuffleMode(bool);
 	void updateSongPosition(ofxDatGuiSlider*);
 	void updateNowPlayingLabel(std::string, ofxDatGuiLabel*);
 	void updateSongLengthLabel(std::string, ofxDatGuiLabel*);
@@ -63,5 +65,4 @@ public:
 	void shiftLeftOneSong();
 	void shiftRightOneSong();
 	void shuffleRightRandomAmount();
-	void setShuffleMode(bool);
 };

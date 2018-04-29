@@ -363,7 +363,12 @@ void ofApp::onPlayButtonEvent(ofxDatGuiButtonEvent e) {
 	Event handler for moving left one song.
 */
 void ofApp::onLeftButtonEvent(ofxDatGuiButtonEvent e) {
-	player_->shiftLeftOneSong();
+	if (player_->isShuffleMode()) {
+		player_->shuffleRightRandomAmount();
+	}
+	else {
+		player_->shiftLeftOneSong();
+	}
 
 	//update to song length can't be called in update()... because
 	//of the trick it uses to get the length
@@ -379,7 +384,12 @@ void ofApp::onLeftButtonEvent(ofxDatGuiButtonEvent e) {
 	doesn't need extra calls.
 */
 void ofApp::onRightButtonEvent(ofxDatGuiButtonEvent e) {
-	player_->shiftRightOneSong();
+	if (player_->isShuffleMode()) {
+		player_->shuffleRightRandomAmount();
+	}
+	else {
+		player_->shiftRightOneSong();
+	}
 
 	//update to song length can't be called in update()... because
 	//of the trick it uses to get the length

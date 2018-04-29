@@ -169,6 +169,14 @@ bool MusicPlayer::isPaused() {
 }
 
 /*
+	Returns whether or not this player is in "shuffle mode." This is changed solely
+	by the setShuffleMode(bool) method.
+*/
+bool MusicPlayer::isShuffleMode() {
+	return shuffleMode_;
+}
+
+/*
 	Skips through the contents of the queue, pushing song files to the back,
 	until we reach the file that the user has selected. Then, start
 	play of the song.
@@ -448,6 +456,9 @@ void MusicPlayer::shuffleRightRandomAmount() {
 	}
 }
 
+/*
+	Sets the state of shuffle mode.
+*/
 void MusicPlayer::setShuffleMode(bool setTo) {
 	shuffleMode_ = setTo;
 }
