@@ -28,7 +28,7 @@ private:
 	const double SLIDER_MIN_VAL = 0.0;
 	const double SLIDER_MAX_VAL = 1.0;
 	const int LABEL_LENGTH = 150;
-	const int BUTTON_LENGTH = 150;
+	const int BUTTON_LENGTH = LABEL_LENGTH;
 	const double INITIAL_VOLUME = 0.2;
 	const double INITIAL_POSITION = 0.0;
 
@@ -46,6 +46,8 @@ private:
 	const std::string VOLUME_SLIDER_TITLE = "Volume";
 	const std::string NOW_PLAYING_INFO_TITLE = "Now Playing: ";
 	const std::string SONG_FRAC_TITLE = "Position: ";
+	const std::string SHUFFLE_MODE_ON = "Shuffle Mode: ON";
+	const std::string SHUFFLE_MODE_OFF = "Shuffle Mode: OFF";
 
 private:
 	~ofApp();

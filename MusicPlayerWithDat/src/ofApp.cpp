@@ -406,11 +406,11 @@ void ofApp::onRightButtonEvent(ofxDatGuiButtonEvent e) {
 */
 void ofApp::onShuffleToggleEvent(ofxDatGuiButtonEvent e) {
 	if (!shuffleToggle_->getChecked()) {
-		std::cout << "Changed Toggle To Unchecked!" << std::endl;
+		std::cout << SHUFFLE_MODE_OFF << std::endl;
 		player_->setShuffleMode(false);
 	}
 	else {
-		std::cout << "Changed Toggle To Checked!" << std::endl;
+		std::cout << SHUFFLE_MODE_ON << std::endl;
 		player_->setShuffleMode(true);
 	}
 }
