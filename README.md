@@ -12,9 +12,11 @@ will prevent the project from building and running.
 ### Usage
 
 Usage is intuitive: The GUI presents play/pause buttons for playing and pausing
-the song, buttons to select which song you want to play, some sliders to adjust
-volume and where in the song you want to be at. You can go back and forth between
-songs by pressing the right/left buttons.
+the song, buttons and a scroll view to select which song you want to play, and
+some sliders to adjust volume and where in the song you want to be at.
+You can also go back and forth between songs by pressing the right/left buttons.
+A shuffle mode toggle button exists as well, which modifies the behavior
+of updating to the next song and how the left/right buttons behave.
 
 Keyboard shortcuts:
 - Pressing the spacebar will pause/unpause the song.

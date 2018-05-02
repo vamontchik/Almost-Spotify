@@ -403,6 +403,9 @@ void ofApp::onRightButtonEvent(ofxDatGuiButtonEvent e) {
 /*
 	Looks like presses automatically change the GUI toggle. Ok.
 	Change internal state as necessary.
+
+	NOTE: This seems to be backwards when it's executed internally, 
+	so there's the "not operator" in the if statement.
 */
 void ofApp::onShuffleToggleEvent(ofxDatGuiButtonEvent e) {
 	if (!shuffleToggle_->getChecked()) {
