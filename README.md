@@ -1,4 +1,4 @@
-# Poor Man's Spotify
+# Almost Spotify
 
 A simple GUI built on top of a music player, much like Spotify or
 Windows Groove on your desktop.
